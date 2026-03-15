@@ -592,283 +592,337 @@ body{font-family:var(--font-b);background:var(--bg);color:var(--text);display:fl
 /* ══════════════════════════════════════════════════════
    RESPONSIVE MÓVIL — diseño tipo app nativa (≤ 768px)
 ══════════════════════════════════════════════════════ */
-@media(max-width:768px){
+/* ══════════════════════════════════════════════════════
+   MOBILE PATCH — Diseño tipo app nativa (≤ 768px)
+   Basado en imagen de referencia dg156-android.github.io
+   Reemplaza / sobreescribe las reglas responsive del style.css
+══════════════════════════════════════════════════════ */
+
+@media (max-width: 768px) {
 
   /* ── Base ── */
-  html,body { overflow:auto; background:var(--bg); }
-  #sidebar  { display:none; }
-  #main-area{
-    margin-left:0;
-    height:auto;
-    overflow:visible;
-    padding-bottom:calc(72px + env(safe-area-inset-bottom));
+  html, body { overflow: auto; background: var(--bg); }
+  #sidebar    { display: none; }
+  #breadcrumb { display: none; }
+
+  #main-area {
+    margin-left: 0;
+    height: auto;
+    overflow: visible;
+    padding-bottom: calc(76px + env(safe-area-inset-bottom));
   }
-  #breadcrumb { display:none; }
 
   /* ── Paneles ── */
-  .panel{
-    position:relative; inset:auto;
-    opacity:1; transform:none;
-    pointer-events:all; display:none;
-    padding:16px 14px calc(16px + env(safe-area-inset-bottom));
+  .panel {
+    position: relative; inset: auto;
+    opacity: 1; transform: none;
+    pointer-events: all; display: none;
+    padding: 24px 16px calc(20px + env(safe-area-inset-bottom));
   }
-  .panel.active{ display:block; }
+  .panel.active { display: block; }
 
-  /* ── PANEL HOME: layout de app ── */
-  #panel-home{
-    display:flex;
-    flex-direction:column;
-    padding:20px 14px calc(20px + env(safe-area-inset-bottom));
-    overflow:visible;
-    text-align:left;
-    align-items:flex-start;
-    justify-content:flex-start;
-    min-height:auto;
-  }
-  .home-bg-grid{ display:none; }
-  .home-orb-wrap{ display:none; }
-  .home-content{
-    width:100%;
-    max-width:100%;
-    align-items:flex-start;
-    text-align:left;
-  }
-
-  /* Eyebrow y título compactos */
-  .home-eyebrow{
-    font-size:9px;
-    letter-spacing:.14em;
-    margin-bottom:8px;
-    justify-content:flex-start;
-  }
-  .home-title{
-    font-size:clamp(24px,7vw,36px);
-    text-align:left;
-    margin-bottom:8px;
-    line-height:1.1;
-  }
-  .home-desc{
-    font-size:12.5px;
-    text-align:left;
-    margin-bottom:14px;
-    line-height:1.55;
-    max-width:100%;
+  /* ══════════════════════════════════════════════════
+     PANEL HOME — centrado, tipo app, fondo con grid
+  ══════════════════════════════════════════════════ */
+  #panel-home {
+    display: flex;
+    flex-direction: column;
+    padding: 32px 18px calc(24px + env(safe-area-inset-bottom));
+    overflow: visible;
+    text-align: center;
+    align-items: center;
+    justify-content: flex-start;
+    min-height: auto;
+    /* Fondo con grid sutil (visible en la referencia) */
+    background-image:
+      linear-gradient(rgba(0,229,176,.04) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(0,229,176,.04) 1px, transparent 1px);
+    background-size: 40px 40px;
   }
 
-  /* Badges en fila scrollable */
-  .home-badges{
-    display:flex;
-    flex-wrap:nowrap;
-    overflow-x:auto;
-    gap:7px;
-    margin-bottom:20px;
-    padding-bottom:4px;
-    -webkit-overflow-scrolling:touch;
-    scrollbar-width:none;
-    width:100%;
-    justify-content:flex-start;
-  }
-  .home-badges::-webkit-scrollbar{ display:none; }
-  .sys-badge{
-    font-size:10px;
-    padding:5px 12px;
-    white-space:nowrap;
-    flex-shrink:0;
-    border-radius:999px;
+  .home-bg-grid  { display: block; opacity: .5; }
+  .home-orb-wrap { display: none; }
+
+  .home-content {
+    width: 100%;
+    max-width: 100%;
+    align-items: center;
+    text-align: center;
   }
 
-  /* ══ GRID DE TARJETAS — cuadradas, 2 columnas, tipo app ══ */
-  .home-quick-grid{
-    display:grid !important;
-    grid-template-columns:1fr 1fr !important;
-    grid-auto-rows:1fr;
-    gap:12px;
-    width:100%;
-    max-width:100%;
-    margin:0;
+  /* Eyebrow — letras espaciadas, centrado */
+  .home-eyebrow {
+    font-size: 9.5px;
+    letter-spacing: .18em;
+    margin-bottom: 12px;
+    justify-content: center;
+    color: var(--si);
   }
-  .home-quick-grid .hq-card{
-    width:auto !important;
-    flex-shrink:0;
-    aspect-ratio:1 / 1;
-    padding:0;
-    border-radius:20px;
-    display:flex;
-    flex-direction:column;
-    align-items:center;
-    justify-content:center;
-    gap:10px;
-    /* glow sutil al color de la tarjeta */
-    box-shadow:0 4px 20px rgba(0,0,0,.35);
-    /* fondo con gradiente muy sutil para dar volumen */
-    background:linear-gradient(145deg,rgba(255,255,255,.05),rgba(255,255,255,.02));
-    border:1px solid rgba(255,255,255,.09);
-    transition:transform .18s ease, box-shadow .18s ease;
-    -webkit-tap-highlight-color:transparent;
-    touch-action:manipulation;
+  .home-eyebrow::before,
+  .home-eyebrow::after {
+    content: '—';
+    color: var(--si);
+    opacity: .6;
   }
-  .home-quick-grid .hq-card:active{
-    transform:scale(.94);
-    box-shadow:0 2px 10px rgba(0,0,0,.4);
+  .home-eyebrow::before { margin-right: 6px; }
+  .home-eyebrow::after  { margin-left: 6px;  }
+
+  /* Título grande centrado */
+  .home-title {
+    font-size: clamp(28px, 8vw, 42px);
+    text-align: center;
+    margin-bottom: 12px;
+    line-height: 1.1;
   }
 
-  /* Ícono más grande */
-  .hq-icon{
-    font-size:34px;
-    line-height:1;
-    filter:drop-shadow(0 0 8px var(--c));
-  }
-  /* Nombre de la sección */
-  .hq-name{
-    font-family:var(--font-t);
-    font-size:12px;
-    font-weight:700;
-    color:var(--c);
-    letter-spacing:.04em;
-    text-align:center;
-    padding:0 8px;
-  }
-  /* Descripción corta visible */
-  .hq-desc{
-    font-size:10px;
-    color:var(--text-dim);
-    text-align:center;
-    line-height:1.3;
-    padding:0 10px;
-    display:block;
+  /* Descripción centrada */
+  .home-desc {
+    font-size: 13px;
+    text-align: center;
+    margin-bottom: 18px;
+    line-height: 1.6;
+    max-width: 100%;
+    color: var(--text-dim);
   }
 
-  /* ── BARRA INFERIOR tipo app nativa ── */
-  #mobile-nav{
-    display:flex;
-    position:fixed;
-    bottom:0; left:0; right:0;
-    height:calc(60px + env(safe-area-inset-bottom));
-    padding-bottom:env(safe-area-inset-bottom);
-    background:rgba(6,9,16,.96);
-    border-top:1px solid rgba(0,200,255,.12);
-    backdrop-filter:blur(24px);
-    -webkit-backdrop-filter:blur(24px);
-    z-index:200;
-    /* scroll horizontal si no caben todos */
-    overflow-x:auto;
-    overflow-y:hidden;
-    scrollbar-width:none;
-    gap:0;
-    align-items:stretch;
+  /* Badges — solo 2 visibles (SI + EE.UU.), fila scrollable */
+  .home-badges {
+    display: flex;
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    gap: 8px;
+    margin-bottom: 24px;
+    padding-bottom: 4px;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+    width: 100%;
+    justify-content: center;
   }
-  #mobile-nav::-webkit-scrollbar{ display:none; }
+  .home-badges::-webkit-scrollbar { display: none; }
+  .sys-badge {
+    font-size: 10.5px;
+    padding: 6px 14px;
+    white-space: nowrap;
+    flex-shrink: 0;
+    border-radius: 999px;
+  }
+  /* Ocultar badge Imperial en mobile (igual que la imagen) */
+  .sys-badge.imp { display: none; }
 
-  .mn-btn{
-    display:flex;
-    flex-direction:column;
-    align-items:center;
-    justify-content:center;
-    gap:4px;
-    background:none;
-    border:none;
-    cursor:pointer;
-    padding:0 14px;
-    min-width:60px;
-    flex-shrink:0;
-    color:var(--text-dim);
-    transition:color .15s ease, background .15s ease;
-    -webkit-tap-highlight-color:transparent;
-    touch-action:manipulation;
-    position:relative;
+  /* ══ GRID — 3 columnas, tarjetas cuadradas, tipo app ══ */
+  .home-quick-grid {
+    display: grid !important;
+    grid-template-columns: repeat(3, 1fr) !important;
+    grid-auto-rows: auto;
+    gap: 12px;
+    width: 100%;
+    max-width: 100%;
+    margin: 0;
   }
-  /* Emoji / ícono */
-  .mn-btn > *:first-child{
-    font-size:20px;
-    line-height:1;
-    transition:transform .15s ease;
+
+  .home-quick-grid .hq-card {
+    width: auto !important;
+    flex-shrink: 0;
+    aspect-ratio: 1 / 1;
+    padding: 10px 6px;
+    border-radius: 22px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    background: rgba(13, 24, 40, 0.85);
+    border: 1px solid rgba(255,255,255,.08);
+    box-shadow:
+      0 4px 24px rgba(0,0,0,.4),
+      inset 0 1px 0 rgba(255,255,255,.06);
+    transition: transform .18s ease, box-shadow .18s ease;
+    -webkit-tap-highlight-color: transparent;
+    touch-action: manipulation;
   }
-  /* Texto label */
-  .mn-btn span{
-    font-family:var(--font-m);
-    font-size:8px;
-    letter-spacing:.06em;
-    text-transform:uppercase;
-    white-space:nowrap;
+
+  .home-quick-grid .hq-card:active {
+    transform: scale(.93);
+    box-shadow: 0 2px 12px rgba(0,0,0,.5);
   }
-  /* Estado activo: indicador superior + color */
-  .mn-btn.active{
-    color:var(--si);
+
+  /* Tarjeta Actividades — borde verde neón */
+  .hq-card-act {
+    border-color: rgba(57,255,20,.22) !important;
+    background: rgba(10,22,10,.85) !important;
+    box-shadow:
+      0 4px 24px rgba(0,0,0,.4),
+      0 0 18px rgba(57,255,20,.08),
+      inset 0 1px 0 rgba(255,255,255,.05) !important;
   }
-  .mn-btn.active::before{
-    content:'';
-    position:absolute;
-    top:0; left:50%;
-    transform:translateX(-50%);
-    width:28px; height:3px;
-    background:var(--si);
-    border-radius:0 0 4px 4px;
-    box-shadow:0 0 10px var(--si-glow);
+  .hq-card-act:active {
+    box-shadow: 0 2px 12px rgba(57,255,20,.2) !important;
   }
-  .mn-btn:active > *:first-child{
-    transform:scale(.85);
+
+  /* Icono grande con glow */
+  .hq-icon {
+    font-size: 32px;
+    line-height: 1;
+    filter: drop-shadow(0 0 8px var(--c));
   }
+
+  /* Nombre con color acento */
+  .hq-name {
+    font-family: var(--font-t);
+    font-size: 11px;
+    font-weight: 700;
+    color: var(--c);
+    letter-spacing: .03em;
+    text-align: center;
+    padding: 0 4px;
+    line-height: 1.2;
+  }
+
+  /* Descripción corta */
+  .hq-desc {
+    font-size: 9.5px;
+    color: var(--text-dim);
+    text-align: center;
+    line-height: 1.3;
+    padding: 0 4px;
+    display: block;
+  }
+
+  /* ══════════════════════════════════════════════════
+     BOTTOM NAV — estilo nativo con ítem activo destacado
+  ══════════════════════════════════════════════════ */
+  #mobile-nav {
+    display: flex;
+    position: fixed;
+    bottom: 0; left: 0; right: 0;
+    height: calc(68px + env(safe-area-inset-bottom));
+    padding: 0 8px;
+    padding-bottom: env(safe-area-inset-bottom);
+    background: rgba(6, 9, 16, .97);
+    border-top: 1px solid rgba(0,200,255,.1);
+    backdrop-filter: blur(28px);
+    -webkit-backdrop-filter: blur(28px);
+    z-index: 200;
+    overflow-x: auto;
+    overflow-y: hidden;
+    scrollbar-width: none;
+    gap: 0;
+    align-items: center;
+    justify-content: space-around;
+  }
+  #mobile-nav::-webkit-scrollbar { display: none; }
+
+  .mn-btn {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 4px;
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 8px 10px;
+    min-width: 56px;
+    border-radius: 14px;
+    flex-shrink: 0;
+    color: rgba(150, 180, 220, .5);
+    transition: color .15s ease, background .15s ease;
+    -webkit-tap-highlight-color: transparent;
+    touch-action: manipulation;
+    position: relative;
+  }
+
+  /* Emoji/icono */
+  .mn-btn > *:first-child {
+    font-size: 22px;
+    line-height: 1;
+    transition: transform .15s ease;
+  }
+
+  /* Label */
+  .mn-btn span {
+    font-family: var(--font-m);
+    font-size: 8px;
+    letter-spacing: .04em;
+    text-transform: uppercase;
+    white-space: nowrap;
+    color: inherit;
+  }
+
+  /* Estado activo — cuadro redondeado verde (como en la imagen) */
+  .mn-btn.active {
+    color: var(--si);
+    background: rgba(0, 229, 176, .1);
+    border: 1px solid rgba(0, 229, 176, .2);
+    box-shadow: 0 0 16px rgba(0, 229, 176, .12);
+  }
+
+  /* Eliminar el indicador de línea superior anterior */
+  .mn-btn.active::before { display: none; }
+
+  .mn-btn:active > *:first-child { transform: scale(.82); }
 
   /* ── Convertidor ── */
-  .conv-inputs{ grid-template-columns:1fr; }
-  .conv-arrow-wrap{ display:none; }
+  .conv-inputs { grid-template-columns: 1fr; }
+  .conv-arrow-wrap { display: none; }
 
   /* ── Sistemas ── */
-  .detail-content{ grid-template-columns:1fr; }
-  .sys-cards-grid{ grid-template-columns:1fr; }
+  .detail-content { grid-template-columns: 1fr; }
+  .sys-cards-grid { grid-template-columns: 1fr; }
 
   /* ── Tabla ── */
-  .tbl-wrap{ -webkit-overflow-scrolling:touch; }
-  #main-table{ font-size:12px; }
+  .tbl-wrap { -webkit-overflow-scrolling: touch; }
+  #main-table { font-size: 12px; }
   #main-table th,
-  #main-table td{ padding:7px 10px; white-space:nowrap; }
+  #main-table td { padding: 7px 10px; white-space: nowrap; }
   #main-table th:nth-child(7),
-  #main-table td:nth-child(7){ display:none; }
+  #main-table td:nth-child(7) { display: none; }
 
   /* ── Panel headers ── */
-  .panel-header{ margin-bottom:20px; }
-  .section-title{ font-size:clamp(18px,5.5vw,26px); }
+  .panel-header { margin-bottom: 20px; }
+  .section-title { font-size: clamp(18px, 5.5vw, 26px); }
 
   /* ── Botones nivel/método ── */
-  .lvl-tab,.mtab{ font-size:10px; padding:7px 14px; }
+  .lvl-tab, .mtab { font-size: 10px; padding: 7px 14px; }
 
-  /* ── Modal actividades: centrado en Android/iOS ── */
-  #act-modal{
-    position:fixed;
-    top:50%; left:50%;
-    transform:translate(-50%,-50%) scale(.93);
-    width:min(820px,96vw);
-    max-height:92vh;
-    border-radius:20px;
+  /* ── Modal actividades ── */
+  #act-modal {
+    position: fixed;
+    top: 50%; left: 50%;
+    transform: translate(-50%, -50%) scale(.93);
+    width: min(820px, 96vw);
+    max-height: 92vh;
+    border-radius: 20px;
   }
-  #act-modal.open{
-    transform:translate(-50%,-50%) scale(1);
+  #act-modal.open {
+    transform: translate(-50%, -50%) scale(1);
   }
 
   /* ── Modal ejemplos ── */
-  #ex-modal{
-    width:min(640px,96vw);
-    max-height:92vh;
+  #ex-modal {
+    width: min(640px, 96vw);
+    max-height: 92vh;
   }
 
   /* ── Firma ── */
-  #dgz-firma{
-    bottom:calc(68px + env(safe-area-inset-bottom));
-    right:14px;
+  #dgz-firma {
+    bottom: calc(76px + env(safe-area-inset-bottom));
+    right: 14px;
   }
 }
 
 /* ══════════════════════════════════════════════════════
    MÓVIL MUY PEQUEÑO (≤ 380px) — ajustes finos
 ══════════════════════════════════════════════════════ */
-@media(max-width:380px){
-  .home-quick-grid{ gap:9px; }
-  .hq-icon{ font-size:28px; }
-  .hq-name{ font-size:11px; }
-  .hq-desc{ display:none; }
-  .mn-btn{ padding:0 10px; min-width:50px; }
-  .mn-btn span{ font-size:7px; }
+@media (max-width: 380px) {
+  .home-quick-grid { gap: 8px; }
+  .hq-icon         { font-size: 26px; }
+  .hq-name         { font-size: 10px; }
+  .hq-desc         { display: none; }
+  .mn-btn          { padding: 6px 8px; min-width: 48px; }
+  .mn-btn span     { font-size: 7px; }
 }
+
 
 
 /* ══════════════════════════════════════════════════════
