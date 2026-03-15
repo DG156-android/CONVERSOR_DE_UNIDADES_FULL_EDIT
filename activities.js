@@ -407,3 +407,4 @@ function actClose() {
   const overlay = document.getElementById('act-overlay');
   if (overlay) overlay.addEventListener('click', actClose);
 })();
+
