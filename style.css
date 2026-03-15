@@ -590,184 +590,284 @@ body{font-family:var(--font-b);background:var(--bg);color:var(--text);display:fl
 }
 
 /* ══════════════════════════════════════════════════════
-   RESPONSIVE — TABLET  (≤ 768px)
+   RESPONSIVE MÓVIL — diseño tipo app nativa (≤ 768px)
 ══════════════════════════════════════════════════════ */
 @media(max-width:768px){
-  html,body{overflow:auto}
-  #sidebar{display:none}
-  #main-area{margin-left:0;height:auto;overflow:visible}
+
+  /* ── Base ── */
+  html,body { overflow:auto; background:var(--bg); }
+  #sidebar  { display:none; }
+  #main-area{
+    margin-left:0;
+    height:auto;
+    overflow:visible;
+    padding-bottom:calc(72px + env(safe-area-inset-bottom));
+  }
+  #breadcrumb { display:none; }
+
+  /* ── Paneles ── */
   .panel{
-    position:relative;inset:auto;opacity:1;transform:none;
-    pointer-events:all;display:none;
-    padding:20px 16px 90px;
-    /* safe area para el notch de iPhone */
-    padding-bottom:calc(80px + env(safe-area-inset-bottom));
+    position:relative; inset:auto;
+    opacity:1; transform:none;
+    pointer-events:all; display:none;
+    padding:16px 14px calc(16px + env(safe-area-inset-bottom));
   }
-  .panel.active{display:block}
-  #breadcrumb{display:none}
+  .panel.active{ display:block; }
 
-  /* ── Bottom Nav ── */
-  #mobile-nav{
-    display:flex;position:fixed;bottom:0;left:0;right:0;
-    background:rgba(6,9,16,.97);
-    border-top:1px solid var(--border);
-    backdrop-filter:blur(20px);
-    -webkit-backdrop-filter:blur(20px);
-    z-index:100;
-    padding:6px 4px;
-    /* safe area para home indicator de iPhone */
-    padding-bottom:calc(6px + env(safe-area-inset-bottom));
-    gap:2px;justify-content:space-around;
-  }
-  .mn-btn{
-    display:flex;flex-direction:column;align-items:center;gap:3px;
-    background:none;border:none;cursor:pointer;
-    /* área táctil mínima recomendada por Apple/Google */
-    padding:8px 6px;
-    border-radius:9px;
-    font-size:18px; /* emoji más grande para dedo */
-    color:var(--text-dim);
-    transition:all var(--tr);
-    flex:1;min-width:0;
-    min-height:44px; /* mínimo 44pt táctil */
-    -webkit-tap-highlight-color:transparent;
-  }
-  .mn-btn span{
-    font-family:var(--font-m);font-size:8.5px;letter-spacing:.05em;
-    text-transform:uppercase;white-space:nowrap;
-    overflow:hidden;text-overflow:ellipsis;width:100%;text-align:center;
-  }
-  .mn-btn.active{background:rgba(0,229,176,.1);color:var(--si)}
-  .mn-btn:active{transform:scale(.92);background:rgba(0,229,176,.07)}
-
-  /* ── Panel home en móvil ── */
+  /* ── PANEL HOME: layout de app ── */
   #panel-home{
-    padding:24px 16px 90px;
-    padding-bottom:calc(90px + env(safe-area-inset-bottom));
-    min-height:100dvh; /* dvh = dynamic viewport height, correcto en móvil */
+    display:flex;
+    flex-direction:column;
+    padding:20px 14px calc(20px + env(safe-area-inset-bottom));
+    overflow:visible;
+    text-align:left;
+    align-items:flex-start;
+    justify-content:flex-start;
+    min-height:auto;
+  }
+  .home-bg-grid{ display:none; }
+  .home-orb-wrap{ display:none; }
+  .home-content{
+    width:100%;
+    max-width:100%;
+    align-items:flex-start;
+    text-align:left;
   }
 
-  /* ── Grid de acceso rápido: 2 columnas proporcionales ──
-     Las tarjetas deben ser cuadradas y llenar el ancho disponible */
+  /* Eyebrow y título compactos */
+  .home-eyebrow{
+    font-size:9px;
+    letter-spacing:.14em;
+    margin-bottom:8px;
+    justify-content:flex-start;
+  }
+  .home-title{
+    font-size:clamp(24px,7vw,36px);
+    text-align:left;
+    margin-bottom:8px;
+    line-height:1.1;
+  }
+  .home-desc{
+    font-size:12.5px;
+    text-align:left;
+    margin-bottom:14px;
+    line-height:1.55;
+    max-width:100%;
+  }
+
+  /* Badges en fila scrollable */
+  .home-badges{
+    display:flex;
+    flex-wrap:nowrap;
+    overflow-x:auto;
+    gap:7px;
+    margin-bottom:20px;
+    padding-bottom:4px;
+    -webkit-overflow-scrolling:touch;
+    scrollbar-width:none;
+    width:100%;
+    justify-content:flex-start;
+  }
+  .home-badges::-webkit-scrollbar{ display:none; }
+  .sys-badge{
+    font-size:10px;
+    padding:5px 12px;
+    white-space:nowrap;
+    flex-shrink:0;
+    border-radius:999px;
+  }
+
+  /* ══ GRID DE TARJETAS — cuadradas, 2 columnas, tipo app ══ */
   .home-quick-grid{
     display:grid !important;
-    grid-template-columns:repeat(2,1fr) !important;
+    grid-template-columns:1fr 1fr !important;
+    grid-auto-rows:1fr;
     gap:12px;
     width:100%;
     max-width:100%;
+    margin:0;
   }
   .home-quick-grid .hq-card{
     width:auto !important;
-    aspect-ratio:1/1;
-    padding:20px 12px 16px;
-    gap:8px;
+    flex-shrink:0;
+    aspect-ratio:1 / 1;
+    padding:0;
+    border-radius:20px;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    justify-content:center;
+    gap:10px;
+    /* glow sutil al color de la tarjeta */
+    box-shadow:0 4px 20px rgba(0,0,0,.35);
+    /* fondo con gradiente muy sutil para dar volumen */
+    background:linear-gradient(145deg,rgba(255,255,255,.05),rgba(255,255,255,.02));
+    border:1px solid rgba(255,255,255,.09);
+    transition:transform .18s ease, box-shadow .18s ease;
+    -webkit-tap-highlight-color:transparent;
+    touch-action:manipulation;
   }
-  .hq-icon{font-size:26px}
-  .hq-name{font-size:12px}
-  .hq-desc{font-size:10px}
-  .home-orb-wrap{display:none}
+  .home-quick-grid .hq-card:active{
+    transform:scale(.94);
+    box-shadow:0 2px 10px rgba(0,0,0,.4);
+  }
+
+  /* Ícono más grande */
+  .hq-icon{
+    font-size:34px;
+    line-height:1;
+    filter:drop-shadow(0 0 8px var(--c));
+  }
+  /* Nombre de la sección */
+  .hq-name{
+    font-family:var(--font-t);
+    font-size:12px;
+    font-weight:700;
+    color:var(--c);
+    letter-spacing:.04em;
+    text-align:center;
+    padding:0 8px;
+  }
+  /* Descripción corta visible */
+  .hq-desc{
+    font-size:10px;
+    color:var(--text-dim);
+    text-align:center;
+    line-height:1.3;
+    padding:0 10px;
+    display:block;
+  }
+
+  /* ── BARRA INFERIOR tipo app nativa ── */
+  #mobile-nav{
+    display:flex;
+    position:fixed;
+    bottom:0; left:0; right:0;
+    height:calc(60px + env(safe-area-inset-bottom));
+    padding-bottom:env(safe-area-inset-bottom);
+    background:rgba(6,9,16,.96);
+    border-top:1px solid rgba(0,200,255,.12);
+    backdrop-filter:blur(24px);
+    -webkit-backdrop-filter:blur(24px);
+    z-index:200;
+    /* scroll horizontal si no caben todos */
+    overflow-x:auto;
+    overflow-y:hidden;
+    scrollbar-width:none;
+    gap:0;
+    align-items:stretch;
+  }
+  #mobile-nav::-webkit-scrollbar{ display:none; }
+
+  .mn-btn{
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    justify-content:center;
+    gap:4px;
+    background:none;
+    border:none;
+    cursor:pointer;
+    padding:0 14px;
+    min-width:60px;
+    flex-shrink:0;
+    color:var(--text-dim);
+    transition:color .15s ease, background .15s ease;
+    -webkit-tap-highlight-color:transparent;
+    touch-action:manipulation;
+    position:relative;
+  }
+  /* Emoji / ícono */
+  .mn-btn > *:first-child{
+    font-size:20px;
+    line-height:1;
+    transition:transform .15s ease;
+  }
+  /* Texto label */
+  .mn-btn span{
+    font-family:var(--font-m);
+    font-size:8px;
+    letter-spacing:.06em;
+    text-transform:uppercase;
+    white-space:nowrap;
+  }
+  /* Estado activo: indicador superior + color */
+  .mn-btn.active{
+    color:var(--si);
+  }
+  .mn-btn.active::before{
+    content:'';
+    position:absolute;
+    top:0; left:50%;
+    transform:translateX(-50%);
+    width:28px; height:3px;
+    background:var(--si);
+    border-radius:0 0 4px 4px;
+    box-shadow:0 0 10px var(--si-glow);
+  }
+  .mn-btn:active > *:first-child{
+    transform:scale(.85);
+  }
 
   /* ── Convertidor ── */
-  .conv-inputs{grid-template-columns:1fr 1fr}
-  .conv-arrow-wrap{display:none}
+  .conv-inputs{ grid-template-columns:1fr; }
+  .conv-arrow-wrap{ display:none; }
 
   /* ── Sistemas ── */
-  .detail-content{grid-template-columns:1fr}
+  .detail-content{ grid-template-columns:1fr; }
+  .sys-cards-grid{ grid-template-columns:1fr; }
 
-  /* ── Tabla: scroll horizontal tactil ── */
-  .tbl-wrap{border-radius:var(--r);-webkit-overflow-scrolling:touch}
-  #main-table{font-size:12px}
-  #main-table th,#main-table td{padding:7px 10px;white-space:nowrap}
+  /* ── Tabla ── */
+  .tbl-wrap{ -webkit-overflow-scrolling:touch; }
+  #main-table{ font-size:12px; }
+  #main-table th,
+  #main-table td{ padding:7px 10px; white-space:nowrap; }
+  #main-table th:nth-child(7),
+  #main-table td:nth-child(7){ display:none; }
 
-  /* ── Modal actividades: centrado correcto en Android/iOS ── */
+  /* ── Panel headers ── */
+  .panel-header{ margin-bottom:20px; }
+  .section-title{ font-size:clamp(18px,5.5vw,26px); }
+
+  /* ── Botones nivel/método ── */
+  .lvl-tab,.mtab{ font-size:10px; padding:7px 14px; }
+
+  /* ── Modal actividades: centrado en Android/iOS ── */
   #act-modal{
     position:fixed;
     top:50%; left:50%;
     transform:translate(-50%,-50%) scale(.93);
-    width:min(820px,94vw);
-    max-height:90vh;
+    width:min(820px,96vw);
+    max-height:92vh;
+    border-radius:20px;
   }
-  #act-modal.open{transform:translate(-50%,-50%) scale(1)}
+  #act-modal.open{
+    transform:translate(-50%,-50%) scale(1);
+  }
+
+  /* ── Modal ejemplos ── */
+  #ex-modal{
+    width:min(640px,96vw);
+    max-height:92vh;
+  }
+
+  /* ── Firma ── */
+  #dgz-firma{
+    bottom:calc(68px + env(safe-area-inset-bottom));
+    right:14px;
+  }
 }
 
 /* ══════════════════════════════════════════════════════
-   RESPONSIVE — MÓVIL PEQUEÑO (≤ 480px)
+   MÓVIL MUY PEQUEÑO (≤ 380px) — ajustes finos
 ══════════════════════════════════════════════════════ */
-@media(max-width:480px){
-  /* Grid home: 2 columnas cuadradas proporcionales */
-  .home-quick-grid{
-    grid-template-columns:repeat(2,1fr) !important;
-    gap:10px;
-  }
-  .home-quick-grid .hq-card{
-    padding:16px 8px 12px;
-    border-radius:14px;
-    aspect-ratio:1/1;
-  }
-
-  /* Título home más pequeño */
-  .home-title{font-size:clamp(22px,7vw,34px)}
-
-  /* Badges compactos */
-  .home-badges{gap:6px}
-  .sys-badge{font-size:10px;padding:5px 12px}
-
-  /* Una columna para sistemas */
-  .sys-cards-grid{grid-template-columns:1fr}
-
-  /* Convertidor: una columna */
-  .conv-inputs{grid-template-columns:1fr}
-  .conv-field label{font-size:10px}
-
-  /* Tabla: columnas opcionales ocultas */
-  #main-table th:nth-child(6),
-  #main-table td:nth-child(6),
-  #main-table th:nth-child(7),
-  #main-table td:nth-child(7){display:none}
-
-  /* Panel header más compacto */
-  .panel-header{margin-bottom:20px}
-  .section-title{font-size:clamp(18px,5.5vw,26px)}
-
-  /* Botones de nivel/método más pequeños */
-  .lvl-tab,.mtab{font-size:10px;padding:7px 12px}
-
-  /* Modal actividades: pantalla completa en móvil pequeño
-     Usar inset en lugar de transform para evitar bugs en Chrome Android */
-  #act-modal{
-    position:fixed;
-    inset:0;             /* top:0 right:0 bottom:0 left:0 */
-    width:100% !important;
-    max-height:100% !important;
-    border-radius:0 !important;
-    transform:none !important;
-    /* reemplazar la animación de escala por una de opacidad */
-    transition:opacity .3s ease !important;
-  }
-  #act-modal:not(.open){
-    opacity:0;
-    pointer-events:none;
-    transform:none !important;
-  }
-  #act-modal.open{
-    opacity:1;
-    pointer-events:all;
-    transform:none !important;
-  }
-
-  /* Modal ejemplos: también pantalla completa */
-  #ex-modal{
-    position:fixed;
-    inset:0;
-    width:100% !important;
-    max-height:100% !important;
-    border-radius:0 !important;
-    transform:none !important;
-  }
-  #ex-modal.open{transform:none !important}
-
-  /* Firma DGZ no se superpone con la nav */
-  #dgz-firma{bottom:calc(70px + env(safe-area-inset-bottom));right:16px}
+@media(max-width:380px){
+  .home-quick-grid{ gap:9px; }
+  .hq-icon{ font-size:28px; }
+  .hq-name{ font-size:11px; }
+  .hq-desc{ display:none; }
+  .mn-btn{ padding:0 10px; min-width:50px; }
+  .mn-btn span{ font-size:7px; }
 }
 
 
