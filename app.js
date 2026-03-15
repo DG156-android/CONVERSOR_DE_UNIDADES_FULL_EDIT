@@ -363,3 +363,4 @@ document.addEventListener('DOMContentLoaded', () => {
   const overlay = document.getElementById('ex-modal-overlay');
   if (overlay) overlay.addEventListener('click', closeExModal);
 });
+
