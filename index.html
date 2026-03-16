@@ -44,7 +44,6 @@
             <stop offset="100%" stop-color="#00cfff"/>
           </linearGradient>
         </defs>
-        <!-- Símbolo infinito — lemniscata elegante -->
         <path d="M 6 18
                  C 6 12, 10 8.5, 14 10.5
                  C 16.5 12, 17.5 15, 18 18
@@ -55,7 +54,6 @@
                  C 17.5 21, 16.5 24, 14 25.5
                  C 10 27.5, 6 24, 6 18 Z"
               fill="none" stroke="url(#uv-grad)" stroke-width="2.2" stroke-linecap="round"/>
-        <!-- Punto de cruce central -->
         <circle cx="18" cy="18" r="1.8" fill="#00cfff" opacity="0.9"/>
         <circle cx="18" cy="18" r="0.8" fill="#ffffff"/>
       </svg>
@@ -64,7 +62,6 @@
 
     <div class="sb-spacer"></div>
 
-    <!-- Botón INICIO — fondo del sidebar -->
     <button class="sb-home-btn" onclick="openPanel('home')">
       <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
         <path d="M3 12L12 3L21 12V21H15V15H9V21H3V12Z"
@@ -104,7 +101,7 @@
       <div class="home-content">
         <div class="home-eyebrow">GUÍA INTERACTIVA · SISTEMAS DE MEDICIÓN</div>
         <h1 class="home-title">Convierte cualquier<br><span class="home-accent">Unidad del Mundo</span></h1>
-        <p class="home-desc">Selecciona una sección del menú lateral para explorar los sistemas de medición, aprender a convertir y practicar con ejemplos interactivos.</p>
+        <p class="home-desc">Selecciona una sección del menú inferior para explorar los sistemas de medición, aprender a convertir y practicar con ejemplos interactivos.</p>
         <div class="home-badges">
           <div class="sys-badge si"><span class="sys-dot"></span>SI — Sistema Internacional</div>
           <div class="sys-badge imp"><span class="sys-dot"></span>Imperial UK</div>
@@ -114,9 +111,9 @@
           <button class="hq-card" data-panel="sistemas"    style="--c:#00e5b0"><span class="hq-icon">🔵</span><span class="hq-name">Sistemas</span><span class="hq-desc">SI · Imperial · EE.UU.</span></button>
           <button class="hq-card" data-panel="uso"         style="--c:#00b4ff"><span class="hq-icon">🌐</span><span class="hq-name">Uso Mundial</span><span class="hq-desc">Regiones e industrias</span></button>
           <button class="hq-card" data-panel="metodo"      style="--c:#c96bff"><span class="hq-icon">📐</span><span class="hq-name">Método</span><span class="hq-desc">Cómo convertir</span></button>
-          <button class="hq-card" data-panel="convertidor" style="--c:#00e5b0"><span class="hq-icon">⇄</span><span class="hq-name">Convertidor</span><span class="hq-desc">Herramienta en vivo</span></button>
           <button class="hq-card" data-panel="ejemplos"    style="--c:#ff9f43"><span class="hq-icon">📋</span><span class="hq-name">Ejemplos</span><span class="hq-desc">Paso a paso · 3 niveles</span></button>
           <button class="hq-card" data-panel="tabla"       style="--c:#ff6b6b"><span class="hq-icon">📊</span><span class="hq-name">Tabla</span><span class="hq-desc">+100 conversiones</span></button>
+          <button class="hq-card" data-panel="convertidor" style="--c:#00e5b0"><span class="hq-icon">⇄</span><span class="hq-name">Convertidor</span><span class="hq-desc">Herramienta en vivo</span></button>
           <button class="hq-card hq-card-act"              style="--c:#39ff14" onclick="actOpen()"><span class="hq-icon">✏️</span><span class="hq-name">Actividades</span><span class="hq-desc">Ejercicios · 3 niveles</span></button>
         </div>
       </div>
@@ -271,15 +268,45 @@
   </nav>
 
   <!-- ══════════════════════════════════════════════════
-       MÓDULO ACTIVIDADES — botón flotante + modal
+       MODAL DE PANEL — se usa solo en móvil
+       Envuelve el contenido de cada sección como modal flotante
+  ══════════════════════════════════════════════════ -->
+  <div id="panel-modal-overlay"></div>
+  <div id="panel-modal" role="dialog" aria-modal="true">
+    <div class="pm-header">
+      <div class="pm-header-left">
+        <span class="pm-eyebrow" id="pm-eyebrow">// SECCIÓN</span>
+        <span class="pm-title" id="pm-title">Título</span>
+      </div>
+      <button class="pm-close" id="pm-close-btn" aria-label="Cerrar">✕</button>
+    </div>
+    <div class="pm-body" id="pm-body">
+      <!-- el panel se mueve aquí en móvil -->
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════════════════
+       MÓDULO ACTIVIDADES
   ══════════════════════════════════════════════════ -->
 
-  <!-- FAB eliminado — acceso desde tarjeta home -->
+  <!-- ══════════════════════════════════════════════════
+       SECTION MODAL — idéntico al de Actividades
+       Solo en móvil. Cada sección se abre aquí.
+  ══════════════════════════════════════════════════ -->
+  <div id="sec-modal-overlay"></div>
+  <div id="sec-modal" role="dialog" aria-modal="true">
+    <div class="sec-modal-header">
+      <div class="sec-modal-header-left">
+        <span class="act-eyebrow" id="sec-modal-eyebrow">// SECCIÓN</span>
+        <span class="act-title"   id="sec-modal-title">Título</span>
+      </div>
+      <button class="act-close" onclick="sectionModalClose()" aria-label="Cerrar">✕</button>
+    </div>
+    <div class="sec-modal-body" id="sec-modal-body"></div>
+  </div>
 
-  <!-- Overlay -->
   <div id="act-overlay"></div>
 
-  <!-- Modal de actividades -->
   <div id="act-modal" role="dialog" aria-modal="true" aria-label="Actividades de conversión">
 
     <div class="act-header">
@@ -374,7 +401,6 @@
           .catch(err => console.warn('[UnitVerse] SW error:', err));
       });
     }
-    // Mostrar banner cuando no hay red
     function updateOnlineStatus() {
       const banner = document.getElementById('offline-banner');
       if (!navigator.onLine) {
@@ -388,4 +414,3 @@
   </script>
 </body>
 </html>
-
