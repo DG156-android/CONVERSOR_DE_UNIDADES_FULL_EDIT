@@ -1,0 +1,3416 @@
+index.html
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <title>UnitVerse — Conversión de Unidades</title>
+
+  <!-- ── PWA: Manifest ── -->
+  <link rel="manifest" href="manifest.json" />
+
+  <!-- ── PWA: iOS / Safari meta tags ── -->
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="apple-mobile-web-app-title" content="UnitVerse" />
+  <link rel="apple-touch-icon" href="icons/icon-192.png" />
+  <link rel="apple-touch-startup-image" href="icons/icon-512.png" />
+
+  <!-- ── PWA: Android / Chrome ── -->
+  <meta name="mobile-web-app-capable" content="yes" />
+  <meta name="theme-color" content="#00e5b0" />
+  <meta name="msapplication-TileColor" content="#060b14" />
+
+  <!-- ── SEO / descripción ── -->
+  <meta name="description" content="Convierte cualquier unidad del mundo. Sistema Internacional, Imperial y EE.UU. Funciona sin internet." />
+
+  <link rel="icon" type="image/svg+xml" href="favicon.svg" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Exo+2:wght@300;400;500;600&family=Share+Tech+Mono&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="style.css" />
+  <link rel="stylesheet" href="activities.css" />
+  <link rel="stylesheet" href="mobile.css" />
+</head>
+<body>
+
+  <canvas id="particles-canvas"></canvas>
+
+  <!-- SIDEBAR — solo logo + home -->
+  <aside id="sidebar">
+    <!-- Logo -->
+    <div class="sb-logo" onclick="openPanel('home')">
+      <svg width="36" height="36" viewBox="0 0 36 36" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <defs>
+          <linearGradient id="uv-grad" x1="0%" y1="0%" x2="100%" y2="0%">
+            <stop offset="0%"   stop-color="#00e5b0"/>
+            <stop offset="100%" stop-color="#00cfff"/>
+          </linearGradient>
+        </defs>
+        <path d="M 6 18
+                 C 6 12, 10 8.5, 14 10.5
+                 C 16.5 12, 17.5 15, 18 18
+                 C 18.5 21, 19.5 24, 22 25.5
+                 C 26 27.5, 30 24, 30 18
+                 C 30 12, 26 8.5, 22 10.5
+                 C 19.5 12, 18.5 15, 18 18
+                 C 17.5 21, 16.5 24, 14 25.5
+                 C 10 27.5, 6 24, 6 18 Z"
+              fill="none" stroke="url(#uv-grad)" stroke-width="2.2" stroke-linecap="round"/>
+        <circle cx="18" cy="18" r="1.8" fill="#00cfff" opacity="0.9"/>
+        <circle cx="18" cy="18" r="0.8" fill="#ffffff"/>
+      </svg>
+      <span class="sb-logo-name">UNIT<span>VERSE</span></span>
+    </div>
+
+    <div class="sb-spacer"></div>
+
+    <button class="sb-home-btn" onclick="openPanel('home')">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+        <path d="M3 12L12 3L21 12V21H15V15H9V21H3V12Z"
+              stroke="#00e5b0" stroke-width="1.8" stroke-linejoin="round"
+              fill="rgba(0,229,176,0.12)"/>
+      </svg>
+      <span>Inicio</span>
+    </button>
+
+    <button class="sb-more-btn" onclick="toggleMenu()" aria-label="Más secciones">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+        <path d="M4 10H20M4 14H20" stroke="#4a74ff" stroke-width="2" stroke-linecap="round"/>
+      </svg>
+      <span>Menu</span>
+    </button>
+  </aside>
+
+  <!-- MAIN AREA -->
+  <main id="main-area">
+
+    <!-- BREADCRUMB -->
+    <div id="breadcrumb">
+      <span class="bc-logo" style="display:inline-flex;align-items:center;">
+        <svg width="20" height="20" viewBox="0 0 36 36" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <defs>
+            <linearGradient id="bc-grad" x1="0%" y1="0%" x2="100%" y2="0%">
+              <stop offset="0%"   stop-color="#00e5b0"/>
+              <stop offset="100%" stop-color="#00cfff"/>
+            </linearGradient>
+          </defs>
+          <path d="M 6 18 C 6 12, 10 8.5, 14 10.5 C 16.5 12, 17.5 15, 18 18 C 18.5 21, 19.5 24, 22 25.5 C 26 27.5, 30 24, 30 18 C 30 12, 26 8.5, 22 10.5 C 19.5 12, 18.5 15, 18 18 C 17.5 21, 16.5 24, 14 25.5 C 10 27.5, 6 24, 6 18 Z"
+                fill="none" stroke="url(#bc-grad)" stroke-width="2.2" stroke-linecap="round"/>
+          <circle cx="18" cy="18" r="1.8" fill="#00cfff" opacity="0.9"/>
+          <circle cx="18" cy="18" r="0.8" fill="#ffffff"/>
+        </svg>
+      </span>
+      <span class="bc-sep">›</span>
+      <span id="bc-current">Inicio</span>
+    </div>
+
+    <!-- PANEL HOME -->
+    <div class="panel active" id="panel-home">
+      <div class="home-bg-grid"></div>
+      <div class="home-content">
+        <div class="home-eyebrow">GUÍA INTERACTIVA · SISTEMAS DE MEDICIÓN</div>
+        <h1 class="home-title">Convierte cualquier<br><span class="home-accent">Unidad del Mundo</span></h1>
+        <p class="home-desc">Selecciona una sección del menú inferior para explorar los sistemas de medición, aprender a convertir y practicar con ejemplos interactivos.</p>
+        <div class="home-badges">
+          <div class="sys-badge si"><span class="sys-dot"></span>SI — Sistema Internacional</div>
+          <div class="sys-badge imp"><span class="sys-dot"></span>Imperial UK</div>
+          <div class="sys-badge us"><span class="sys-dot"></span>EE.UU. Consuetudinario</div>
+        </div>
+        <div class="home-quick-grid">
+          <button class="hq-card" data-panel="sistemas"    style="--c:#00e5b0"><span class="hq-icon">🔵</span><span class="hq-name">Sistemas</span><span class="hq-desc">SI · Imperial · EE.UU.</span></button>
+          <button class="hq-card" data-panel="uso"         style="--c:#00b4ff"><span class="hq-icon">🌐</span><span class="hq-name">Uso Mundial</span><span class="hq-desc">Regiones e industrias</span></button>
+          <button class="hq-card" data-panel="metodo"      style="--c:#c96bff"><span class="hq-icon">📐</span><span class="hq-name">Método</span><span class="hq-desc">Cómo convertir</span></button>
+          <button class="hq-card" data-panel="ejemplos"    style="--c:#ff9f43"><span class="hq-icon">📋</span><span class="hq-name">Ejemplos</span><span class="hq-desc">Paso a paso · 3 niveles</span></button>
+          <button class="hq-card" data-panel="tabla"       style="--c:#ff6b6b"><span class="hq-icon">📊</span><span class="hq-name">Tabla</span><span class="hq-desc">+100 conversiones</span></button>
+          <button class="hq-card hq-card-act"              style="--c:#39ff14" onclick="actOpen()"><span class="hq-icon">✏️</span><span class="hq-name">Actividades</span><span class="hq-desc">Ejercicios · 3 niveles</span></button>
+        </div>
+      </div>
+      <div class="home-orb-wrap">
+        <div class="hero-orb"></div>
+        <div class="hero-ring r1"></div>
+        <div class="hero-ring r2"></div>
+        <div class="hero-ring r3"></div>
+      </div>
+    </div>
+
+    <!-- PANEL SISTEMAS -->
+    <div class="panel" id="panel-sistemas">
+      <div class="panel-header">
+        <div class="section-label">// LOS TRES SISTEMAS</div>
+        <h2 class="section-title">¿Qué sistema usa cada país?</h2>
+        <p class="section-desc">Cada sistema tiene su historia y lógica interna. Haz clic en una tarjeta para ver el detalle completo.</p>
+      </div>
+      <div class="sys-cards-grid">
+        <div class="sys-card si"  onclick="toggleSys('si')">
+          <div class="card-glow"></div><div class="card-icon">🌍</div>
+          <div class="card-tag si">SI</div>
+          <h3 class="card-name">Sistema Internacional</h3>
+          <p class="card-short">Usado por más de 195 países. Basado en potencias de 10. Estándar científico universal desde 1960.</p>
+          <div class="card-footer"><span class="card-btn si">VER DETALLE ›</span></div>
+        </div>
+        <div class="sys-card imp" onclick="toggleSys('imp')">
+          <div class="card-glow"></div><div class="card-icon">🏴󠁧󠁢󠁥󠁮󠁧󠁿</div>
+          <div class="card-tag imp">IMPERIAL</div>
+          <h3 class="card-name">Imperial UK</h3>
+          <p class="card-short">Sistema histórico británico estandarizado en 1824. Millas, pintas y stones aún dominan la vida cotidiana.</p>
+          <div class="card-footer"><span class="card-btn imp">VER DETALLE ›</span></div>
+        </div>
+        <div class="sys-card us"  onclick="toggleSys('us')">
+          <div class="card-glow"></div><div class="card-icon">🇺🇸</div>
+          <div class="card-tag us">EE.UU.</div>
+          <h3 class="card-name">EE.UU. Consuetudinario</h3>
+          <p class="card-short">Similar al imperial pero con diferencias clave en volumen. Uno de los únicos países sin SI oficial.</p>
+          <div class="card-footer"><span class="card-btn us">VER DETALLE ›</span></div>
+        </div>
+      </div>
+      <div class="sys-detail-panel" id="sys-detail-panel">
+        <button class="detail-close" onclick="closeSys()">✕ CERRAR</button>
+        <div class="detail-content" id="detail-content"></div>
+      </div>
+    </div>
+
+    <!-- PANEL USO MUNDIAL -->
+    <div class="panel" id="panel-uso">
+      <div class="panel-header">
+        <div class="section-label">// USO POR REGIONES</div>
+        <h2 class="section-title">¿Dónde se usa cada unidad?</h2>
+        <p class="section-desc">Aunque el SI es universal, en la práctica cada región tiene sus unidades propias para contextos específicos.</p>
+      </div>
+      <div class="uso-grid" id="uso-grid"></div>
+    </div>
+
+    <!-- PANEL MÉTODO -->
+    <div class="panel" id="panel-metodo">
+      <div class="panel-header">
+        <div class="section-label">// METODOLOGÍA</div>
+        <h2 class="section-title">Cómo hacer una conversión</h2>
+        <p class="section-desc">Tres métodos. Elige el que mejor se adapte a tu situación.</p>
+      </div>
+      <div class="method-tabs">
+        <button class="mtab active" onclick="showMethod('factor',this)">Factor de conversión</button>
+        <button class="mtab" onclick="showMethod('proporcion',this)">Regla de tres</button>
+        <button class="mtab" onclick="showMethod('cadena',this)">Cadena de unidades</button>
+      </div>
+      <div class="method-panels" id="method-panels"></div>
+    </div>
+
+    <!-- PANEL CONVERTIDOR -->
+    <div class="panel" id="panel-convertidor">
+      <div class="panel-header">
+        <div class="section-label">// HERRAMIENTA INTERACTIVA</div>
+        <h2 class="section-title">Convertidor en tiempo real</h2>
+        <p class="section-desc">Selecciona categoría, unidades y escribe el valor a convertir.</p>
+      </div>
+      <div class="conv-box">
+        <div class="conv-cat-strip" id="conv-cats"></div>
+        <div class="conv-inputs">
+          <div class="conv-field"><label>VALOR</label><input type="number" id="cv-input" value="1" oninput="doConvert()"/></div>
+          <div class="conv-field"><label>DE</label><select id="cv-from" onchange="doConvert()"></select></div>
+          <div class="conv-arrow-wrap"><div class="conv-arrow-icon">⇄</div></div>
+          <div class="conv-field"><label>A</label><select id="cv-to" onchange="doConvert()"></select></div>
+        </div>
+        <div class="conv-result-panel" id="cv-result">
+          <div class="conv-result-label">RESULTADO</div>
+          <div class="conv-result-value" id="cv-val">—</div>
+          <div class="conv-result-formula" id="cv-formula"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- PANEL EJEMPLOS -->
+    <div class="panel" id="panel-ejemplos">
+      <div class="panel-header">
+        <div class="section-label">// APRENDE PASO A PASO</div>
+        <h2 class="section-title">Ejemplos didácticos</h2>
+        <p class="section-desc">Casos reales con contexto, pasos numerados y truco mnemotécnico. Elige el nivel.</p>
+      </div>
+      <div class="level-tabs">
+        <button class="lvl-tab basico active"  onclick="showLevel('basico',this)"><span class="lvl-dot"></span>BÁSICO</button>
+        <button class="lvl-tab medio"          onclick="showLevel('medio',this)"><span class="lvl-dot"></span>MEDIO</button>
+        <button class="lvl-tab avanzado"       onclick="showLevel('avanzado',this)"><span class="lvl-dot"></span>AVANZADO</button>
+      </div>
+      <div class="ex-grid" id="ex-grid"></div>
+    </div>
+
+    <!-- PANEL TABLA -->
+    <div class="panel" id="panel-tabla">
+      <div class="panel-header">
+        <div class="section-label">// REFERENCIA COMPLETA</div>
+        <h2 class="section-title">Tabla de conversiones</h2>
+        <p class="section-desc">Más de 100 conversiones con fórmula y sistema. Filtra o busca cualquier unidad.</p>
+      </div>
+      <div class="tbl-controls">
+        <input class="tbl-search" id="tbl-q" type="text" placeholder="🔍  Buscar: pulgada, galón, BTU..." oninput="renderTable()"/>
+        <div class="tbl-sys-btns">
+          <button class="tsb all active" onclick="setSys('TODOS',this)">TODOS</button>
+          <button class="tsb si"         onclick="setSys('SI',this)">SI</button>
+          <button class="tsb imp"        onclick="setSys('IMP',this)">IMPERIAL</button>
+          <button class="tsb us"         onclick="setSys('US',this)">EE.UU.</button>
+          <button class="tsb cross"      onclick="setSys('CROSS',this)">CRUZADAS</button>
+        </div>
+      </div>
+      <div class="tbl-cat-strip" id="tbl-cats"></div>
+      <div class="tbl-count" id="tbl-count"></div>
+      <div class="tbl-wrap">
+        <table id="main-table">
+          <thead><tr>
+            <th>Conversión</th><th>De</th><th>A</th>
+            <th>Fórmula</th><th>Sistema</th><th>Categoría</th><th>Nota</th>
+          </tr></thead>
+          <tbody id="tbl-body"></tbody>
+        </table>
+      </div>
+    </div>
+
+  </main>
+
+<!-- ═══════════════════════════════════════════════════
+     MOBILE BOTTOM NAV — 4 ítems visibles + botón "···"
+══════════════════════════════════════════════════════ -->
+<nav id="mobile-nav" aria-label="Navegación principal">
+  <button class="mn-btn mn-active" data-panel="home" aria-label="Inicio">
+    <span class="mn-ico">🏠</span>
+    <span class="mn-txt">Inicio</span>
+  </button>
+  <button class="mn-btn" data-panel="sistemas" aria-label="Sistemas">
+    <span class="mn-ico">🔵</span>
+    <span class="mn-txt">Sistemas</span>
+  </button>
+  <button class="mn-btn" data-panel="uso" aria-label="Uso Mundial">
+    <span class="mn-ico">🌐</span>
+    <span class="mn-txt">Uso Mundial</span>
+  </button>
+  <button class="mn-btn" data-panel="metodo" aria-label="Método">
+    <span class="mn-ico">📐</span>
+    <span class="mn-txt">Método</span>
+  </button>
+  <button class="mn-btn" data-panel="convertidor" aria-label="Convertidor">
+    <span class="mn-ico">⇄</span>
+    <span class="mn-txt">Convertidor</span>
+  </button>
+</nav>
+<!-- Overlay del drawer -->
+<div id="mn-overlay" aria-hidden="true"></div>
+<!-- Drawer "Más secciones" -->
+<div id="mn-drawer" role="dialog" aria-modal="true" aria-label="Más secciones" aria-hidden="true">
+  <div class="mn-drawer-handle" aria-hidden="true"></div>
+  <p class="mn-drawer-eyebrow">// MÁS SECCIONES</p>
+  <div class="mn-drawer-grid">
+<button class="mn-drawer-item" data-panel="convertidor" aria-label="Convertidor">
+  <span class="mn-drawer-ico">⇄</span>
+  <span class="mn-drawer-txt">Convertir</span>
+</button>
+
+<button class="mn-drawer-item" data-panel="ejemplos" aria-label="Ejemplos">
+  <span class="mn-drawer-ico">📋</span>
+  <span class="mn-drawer-txt">Ejemplos</span>
+</button>
+
+<button class="mn-drawer-item" data-panel="tabla" aria-label="Tabla">
+  <span class="mn-drawer-ico">📊</span>
+  <span class="mn-drawer-txt">Tabla</span>
+</button>
+  </div>
+</div>
+
+  <!-- ══════════════════════════════════════════════════
+       MODAL DE PANEL — se usa solo en móvil
+       Envuelve el contenido de cada sección como modal flotante
+  ══════════════════════════════════════════════════ -->
+  <div id="panel-modal-overlay"></div>
+  <div id="panel-modal" role="dialog" aria-modal="true">
+    <div class="pm-header">
+      <div class="pm-header-left">
+        <span class="pm-eyebrow" id="pm-eyebrow">// SECCIÓN</span>
+        <span class="pm-title" id="pm-title">Título</span>
+      </div>
+      <button class="pm-close" id="pm-close-btn" aria-label="Cerrar">✕</button>
+    </div>
+    <div class="pm-body" id="pm-body">
+      <!-- el panel se mueve aquí en móvil -->
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════════════════
+       MÓDULO ACTIVIDADES
+  ══════════════════════════════════════════════════ -->
+
+  <!-- ══════════════════════════════════════════════════
+       SECTION MODAL — idéntico al de Actividades
+       Solo en móvil. Cada sección se abre aquí.
+  ══════════════════════════════════════════════════ -->
+  <div id="sec-modal-overlay"></div>
+  <div id="sec-modal" role="dialog" aria-modal="true">
+    <div class="sec-modal-header">
+      <div class="sec-modal-header-left">
+        <span class="act-eyebrow" id="sec-modal-eyebrow">// SECCIÓN</span>
+        <span class="act-title"   id="sec-modal-title">Título</span>
+      </div>
+      <button class="act-close" onclick="sectionModalClose()" aria-label="Cerrar">✕</button>
+    </div>
+    <div class="sec-modal-body" id="sec-modal-body"></div>
+  </div>
+
+  <div id="act-overlay"></div>
+
+  <div id="act-modal" role="dialog" aria-modal="true" aria-label="Actividades de conversión">
+
+    <div class="act-header">
+      <div class="act-header-left">
+        <span class="act-eyebrow">// MODO PRÁCTICA</span>
+        <span class="act-title">Ejercicios de Conversión</span>
+      </div>
+      <button class="act-close" onclick="actClose()" aria-label="Cerrar">✕</button>
+    </div>
+
+    <div class="act-stats">
+      <div class="act-stat">
+        <span class="act-stat-val" id="act-stat-score">0/0</span>
+        <span class="act-stat-lbl">PUNTUACIÓN</span>
+      </div>
+      <div class="act-stat streak">
+        <span class="act-stat-val" id="act-stat-streak">0</span>
+        <span class="act-stat-lbl">RACHA 🔥</span>
+      </div>
+      <div class="act-stat accuracy">
+        <span class="act-stat-val" id="act-stat-acc">—</span>
+        <span class="act-stat-lbl">PRECISIÓN</span>
+      </div>
+    </div>
+
+    <div class="act-progress-bar">
+      <div class="act-progress-fill" id="act-progress-fill"></div>
+    </div>
+
+    <div class="act-levels">
+      <button class="act-lvl-btn basico active"  onclick="actSetLevel('basico', this)">⬤ BÁSICO</button>
+      <button class="act-lvl-btn medio"           onclick="actSetLevel('medio', this)">⬤ MEDIO</button>
+      <button class="act-lvl-btn avanzado"        onclick="actSetLevel('avanzado', this)">⬤ AVANZADO</button>
+    </div>
+
+    <div class="act-body" id="act-body"></div>
+
+  </div>
+
+
+  <!-- ══════════════════════════════════════════════════
+       MODAL DETALLE DE EJEMPLO
+  ══════════════════════════════════════════════════ -->
+  <div id="ex-modal-overlay"></div>
+  <div id="ex-modal" role="dialog" aria-modal="true">
+    <div class="exm-top-bar" id="exm-bar"></div>
+
+    <div class="exm-header">
+      <div class="exm-header-left">
+        <div class="exm-meta-row">
+          <span class="exm-cat" id="exm-cat"></span>
+          <span class="exm-lvl-tag" id="exm-lvl"></span>
+        </div>
+        <h2 class="exm-title" id="exm-title"></h2>
+        <p class="exm-context" id="exm-context"></p>
+      </div>
+      <button class="exm-close" onclick="closeExModal()" aria-label="Cerrar">✕</button>
+    </div>
+
+    <div class="exm-body">
+      <div class="exm-section-label">// PASOS</div>
+      <div class="exm-steps" id="exm-steps"></div>
+
+      <div class="exm-result" id="exm-result">
+        <span class="exm-result-lbl">RESULTADO FINAL</span>
+        <span class="exm-result-val" id="exm-result-val"></span>
+      </div>
+
+      <div class="exm-tip" id="exm-tip"></div>
+    </div>
+  </div>
+
+
+  <!-- FIRMA DGZ -->
+  <div id="dgz-firma">DGZ</div>
+  <!-- ── Banner offline ── -->
+  <div id="offline-banner" aria-live="polite">
+    <span>📶</span> Sin conexión — UnitVerse funciona igual en modo offline
+    <button onclick="document.getElementById('offline-banner').style.display='none'">✕</button>
+  </div>
+
+  <script src="data.js"></script>
+  <script src="app.js"></script>
+  <script src="activities.js"></script>
+  <script src="mobile-nav.js"></script>
+
+  <!-- ── Registro del Service Worker (PWA offline) ── -->
+  <script>
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('./service-worker.js')
+          .then(reg => console.log('[UnitVerse] SW registrado:', reg.scope))
+          .catch(err => console.warn('[UnitVerse] SW error:', err));
+      });
+    }
+    function updateOnlineStatus() {
+      const banner = document.getElementById('offline-banner');
+      if (!navigator.onLine) {
+        banner.classList.add('visible');
+      } else {
+        banner.classList.remove('visible');
+      }
+    }
+    window.addEventListener('online',  updateOnlineStatus);
+    window.addEventListener('offline', updateOnlineStatus);
+  </script>
+  </body>
+</html>
+
+activities.css
+/* ═══════════════════════════════════════════════════════
+   UNITVERSE — activities.css  v2
+═══════════════════════════════════════════════════════ */
+
+/* ── BOTÓN FLOTANTE ──────────────────────────────────── */
+#act-fab {
+  display: none !important;
+  position: fixed;
+  bottom: 32px;
+  right: 32px;
+  z-index: 500;
+  width: 62px;
+  height: 62px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #00e5b0 0%, #00b4ff 100%);
+  border: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 0 0 0 rgba(0,229,176,.5), 0 6px 28px rgba(0,0,0,.5);
+  transition: transform .2s ease, box-shadow .2s ease;
+  animation: fabPulse 3s ease infinite;
+}
+#act-fab:hover {
+  transform: scale(1.1);
+  box-shadow: 0 0 0 8px rgba(0,229,176,.15), 0 8px 32px rgba(0,0,0,.6);
+  animation: none;
+}
+#act-fab svg { width: 28px; height: 28px; pointer-events: none; }
+
+#act-fab-badge {
+  position: absolute;
+  top: -4px; right: -4px;
+  min-width: 20px; height: 20px;
+  background: #ffb800;
+  color: #060b14;
+  font-family: 'Orbitron', monospace;
+  font-size: 9px; font-weight: 900;
+  border-radius: 10px;
+  display: flex; align-items: center; justify-content: center;
+  padding: 0 4px;
+  border: 2px solid #060b14;
+  opacity: 0;
+  transition: opacity .25s ease, transform .25s ease;
+  transform: scale(.6);
+}
+#act-fab-badge.visible { opacity: 1; transform: scale(1); }
+
+@keyframes fabPulse {
+  0%,100% { box-shadow: 0 0 0 0 rgba(0,229,176,.45), 0 6px 28px rgba(0,0,0,.5); }
+  50%      { box-shadow: 0 0 0 12px rgba(0,229,176,0), 0 6px 28px rgba(0,0,0,.5); }
+}
+
+/* ── OVERLAY ─────────────────────────────────────────── */
+#act-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(3,6,14,.82);
+  backdrop-filter: blur(8px);
+  z-index: 600;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity .3s ease;
+}
+#act-overlay.open {
+  opacity: 1;
+  pointer-events: all;
+}
+
+/* ── MODAL ───────────────────────────────────────────── */
+#act-modal {
+  position: fixed;
+  top: 50%; left: 50%;
+  transform: translate(-50%, -50%) scale(.93);
+  z-index: 700;
+  width: min(820px, 96vw);
+  max-height: 88vh;
+  background: #0a1120;
+  border: 1px solid rgba(0,200,255,.22);
+  border-radius: 20px;
+  display: flex;
+  flex-direction: column;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity .32s ease, transform .32s cubic-bezier(.34,1.56,.64,1);
+  box-shadow: 0 0 80px rgba(0,229,176,.08), 0 32px 80px rgba(0,0,0,.7);
+}
+#act-modal.open {
+  opacity: 1;
+  transform: translate(-50%, -50%) scale(1);
+  pointer-events: all;
+}
+
+/* ── HEADER ──────────────────────────────────────────── */
+.act-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 20px 24px 16px;
+  border-bottom: 1px solid rgba(0,200,255,.12);
+  flex-shrink: 0;
+}
+.act-header-left { display: flex; flex-direction: column; gap: 3px; }
+.act-eyebrow {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 10px; letter-spacing: .18em; color: #00e5b0;
+}
+.act-title {
+  font-family: 'Orbitron', monospace;
+  font-size: 17px; font-weight: 700; color: #fff; letter-spacing: .04em;
+}
+.act-close {
+  width: 36px; height: 36px;
+  border-radius: 10px;
+  border: 1px solid rgba(0,200,255,.2);
+  background: transparent;
+  color: #5a7a9a;
+  font-size: 18px;
+  cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  transition: all .18s ease;
+  line-height: 1;
+}
+.act-close:hover { color: #fff; border-color: rgba(0,200,255,.5); background: rgba(0,200,255,.08); }
+
+/* ── STATS BAR ───────────────────────────────────────── */
+.act-stats {
+  display: flex;
+  flex-shrink: 0;
+  background: rgba(0,0,0,.25);
+  border-bottom: 1px solid rgba(0,200,255,.08);
+}
+.act-stat {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 3px;
+  padding: 12px 0;
+  border-right: 1px solid rgba(0,200,255,.06);
+}
+.act-stat:last-child { border-right: none; }
+.act-stat-val {
+  font-family: 'Orbitron', monospace;
+  font-size: 20px; font-weight: 700; color: #00e5b0; line-height: 1;
+}
+.act-stat-lbl {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 9px; letter-spacing: .12em; color: #3a5a7a; text-transform: uppercase;
+}
+.act-stat.streak .act-stat-val   { color: #ffb800; }
+.act-stat.accuracy .act-stat-val { color: #00b4ff; }
+
+/* ── PROGRESS ────────────────────────────────────────── */
+.act-progress-bar { height: 3px; background: rgba(0,200,255,.08); flex-shrink: 0; }
+.act-progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #00e5b0, #00b4ff);
+  width: 0%;
+  transition: width .5s cubic-bezier(.4,0,.2,1);
+  box-shadow: 0 0 8px rgba(0,229,176,.6);
+}
+
+/* ── LEVEL TABS ──────────────────────────────────────── */
+.act-levels {
+  display: flex;
+  gap: 8px;
+  padding: 14px 20px 0;
+  flex-shrink: 0;
+}
+.act-lvl-btn {
+  flex: 1;
+  padding: 9px 0;
+  border-radius: 9px;
+  border: 1px solid;
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 11px; font-weight: 700; letter-spacing: .1em;
+  cursor: pointer;
+  transition: all .2s ease;
+  background: transparent;
+}
+.act-lvl-btn.basico   { color: #00e5b0; border-color: rgba(0,229,176,.3); }
+.act-lvl-btn.medio    { color: #ffb800; border-color: rgba(255,184,0,.3); }
+.act-lvl-btn.avanzado { color: #c96bff; border-color: rgba(201,107,255,.3); }
+.act-lvl-btn.basico.active   { background: #00e5b0; color: #060b14; border-color: #00e5b0; box-shadow: 0 0 16px rgba(0,229,176,.35); }
+.act-lvl-btn.medio.active    { background: #ffb800; color: #060b14; border-color: #ffb800; box-shadow: 0 0 16px rgba(255,184,0,.35); }
+.act-lvl-btn.avanzado.active { background: #c96bff; color: #060b14; border-color: #c96bff; box-shadow: 0 0 16px rgba(201,107,255,.35); }
+
+/* ── SCROLL BODY ─────────────────────────────────────── */
+.act-body {
+  flex: 1;
+  overflow-y: auto;
+  padding: 18px 20px 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  min-height: 0;
+}
+.act-body::-webkit-scrollbar { width: 4px; }
+.act-body::-webkit-scrollbar-track { background: transparent; }
+.act-body::-webkit-scrollbar-thumb { background: rgba(0,200,255,.2); border-radius: 4px; }
+
+/* ══════════════════════════════════════════════════════
+   TARJETAS DE EJERCICIO
+══════════════════════════════════════════════════════ */
+.ex-exercise-card {
+  background: rgba(255,255,255,.03);
+  border: 1px solid rgba(0,200,255,.12);
+  border-radius: 14px;
+  display: flex;
+  flex-direction: column;
+  transition: border-color .2s ease, box-shadow .2s ease;
+  /* Sin overflow:hidden para que nada quede cortado */
+}
+.ex-exercise-card:hover { border-color: rgba(0,200,255,.22); }
+.ex-exercise-card.basico   { border-left: 3px solid #00e5b0; }
+.ex-exercise-card.medio    { border-left: 3px solid #ffb800; }
+.ex-exercise-card.avanzado { border-left: 3px solid #c96bff; }
+.ex-exercise-card.answered { opacity: .75; }
+
+/* Cabecera de la tarjeta */
+.ex-card-head {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 16px 18px 12px;
+  border-bottom: 1px solid rgba(0,200,255,.07);
+}
+.ex-q-num {
+  width: 32px; height: 32px; border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-family: 'Orbitron', monospace; font-size: 12px; font-weight: 700;
+  flex-shrink: 0; color: #060b14;
+}
+.basico   .ex-q-num { background: #00e5b0; }
+.medio    .ex-q-num { background: #ffb800; }
+.avanzado .ex-q-num { background: #c96bff; }
+
+.ex-q-meta { display: flex; flex-direction: column; gap: 3px; flex: 1; }
+.ex-q-cat {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 9.5px; letter-spacing: .14em; color: #3a5a7a; text-transform: uppercase;
+}
+.ex-q-context { font-size: 12px; color: #6a8aaa; line-height: 1.4; font-style: italic; }
+
+/* Cuerpo de la tarjeta */
+.ex-card-body {
+  padding: 14px 18px 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.ex-q-text {
+  font-size: 15px; font-weight: 600; color: #fff; line-height: 1.4; margin: 0;
+}
+.ex-q-text .ex-val {
+  font-family: 'Share Tech Mono', monospace; font-size: 17px;
+}
+.basico   .ex-q-text .ex-val { color: #00e5b0; }
+.medio    .ex-q-text .ex-val { color: #ffb800; }
+.avanzado .ex-q-text .ex-val { color: #c96bff; }
+
+/* Input + botón en fila */
+.ex-input-wrap { display: flex; gap: 10px; align-items: stretch; }
+.ex-input-field-wrap { flex: 1; position: relative; }
+.ex-input-field {
+  width: 100%;
+  padding: 11px 52px 11px 14px;
+  background: rgba(0,0,0,.45);
+  border: 1.5px solid rgba(0,200,255,.18);
+  border-radius: 10px;
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 15px; color: #fff;
+  outline: none;
+  transition: border-color .2s ease, box-shadow .2s ease;
+  box-sizing: border-box;
+}
+.ex-input-field::placeholder { color: #2a4a6a; }
+.ex-input-field:focus {
+  border-color: rgba(0,229,176,.5);
+  box-shadow: 0 0 10px rgba(0,229,176,.12);
+}
+.ex-input-field.correct { border-color: #00e5b0; background: rgba(0,229,176,.06); color: #00e5b0; }
+.ex-input-field.wrong   { border-color: #ff6b6b; background: rgba(255,107,107,.06); color: #ff6b6b; }
+.ex-input-field:disabled { cursor: default; }
+
+.ex-unit-label {
+  position: absolute; right: 12px; top: 50%; transform: translateY(-50%);
+  font-family: 'Share Tech Mono', monospace; font-size: 11px; color: #3a5a7a;
+  pointer-events: none;
+}
+
+.ex-check-btn {
+  padding: 11px 18px;
+  border-radius: 10px; border: 1.5px solid;
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 11px; font-weight: 700; letter-spacing: .08em;
+  cursor: pointer; transition: all .2s ease; white-space: nowrap;
+  background: transparent; flex-shrink: 0;
+}
+.basico   .ex-check-btn { color: #00e5b0; border-color: rgba(0,229,176,.4); }
+.medio    .ex-check-btn { color: #ffb800; border-color: rgba(255,184,0,.4); }
+.avanzado .ex-check-btn { color: #c96bff; border-color: rgba(201,107,255,.4); }
+.basico   .ex-check-btn:hover:not(:disabled) { background: #00e5b0; color: #060b14; box-shadow: 0 0 12px rgba(0,229,176,.35); }
+.medio    .ex-check-btn:hover:not(:disabled) { background: #ffb800; color: #060b14; box-shadow: 0 0 12px rgba(255,184,0,.35); }
+.avanzado .ex-check-btn:hover:not(:disabled) { background: #c96bff; color: #060b14; box-shadow: 0 0 12px rgba(201,107,255,.35); }
+.ex-check-btn:disabled { opacity: .35; cursor: default; }
+
+/* ── FEEDBACK ────────────────────────────────────────── */
+.ex-feedback {
+  display: none;
+  padding: 12px 14px;
+  border-radius: 10px;
+  font-size: 13px;
+  line-height: 1.6;
+}
+.ex-feedback.show { display: block; animation: feedIn .28s ease; }
+@keyframes feedIn { from { opacity:0; transform:translateY(5px); } to { opacity:1; transform:none; } }
+
+.ex-feedback.correct-fb { background: rgba(0,229,176,.07); border: 1px solid rgba(0,229,176,.22); }
+.ex-feedback.wrong-fb   { background: rgba(255,107,107,.06); border: 1px solid rgba(255,107,107,.2); }
+
+.ex-fb-result { font-weight: 700; margin-bottom: 6px; display: flex; align-items: center; gap: 7px; font-size: 13px; }
+.correct-fb .ex-fb-result { color: #00e5b0; }
+.wrong-fb   .ex-fb-result { color: #ff6b6b; }
+.ex-explain { color: #6a8aaa; font-size: 12px; margin-bottom: 5px; }
+.ex-formula {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 12px; color: #00e5b0;
+  background: rgba(0,229,176,.06);
+  border-radius: 6px; padding: 5px 10px;
+  display: inline-block; margin-top: 2px;
+}
+
+/* ── PANTALLA COMPLETADO ─────────────────────────────── */
+.act-complete {
+  display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+  gap: 14px; padding: 48px 24px; text-align: center;
+  min-height: 260px;
+}
+.act-complete-icon { font-size: 52px; }
+.act-complete-title {
+  font-family: 'Orbitron', monospace;
+  font-size: 20px; font-weight: 700; color: #fff;
+}
+.act-complete-pct {
+  font-family: 'Orbitron', monospace;
+  font-size: 44px; font-weight: 900; color: #00e5b0;
+  text-shadow: 0 0 28px rgba(0,229,176,.5);
+  line-height: 1;
+}
+.act-complete-desc { font-size: 13px; color: #5a7a9a; max-width: 300px; line-height: 1.6; }
+.act-new-btn {
+  padding: 12px 30px;
+  border-radius: 10px;
+  border: 1.5px solid #00e5b0;
+  background: rgba(0,229,176,.1);
+  color: #00e5b0;
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 12px; font-weight: 700; letter-spacing: .1em;
+  cursor: pointer;
+  transition: all .2s ease; margin-top: 6px;
+}
+.act-new-btn:hover {
+  background: #00e5b0; color: #060b14;
+  box-shadow: 0 0 18px rgba(0,229,176,.4); transform: translateY(-2px);
+}
+
+/* ── SCORE POP ───────────────────────────────────────── */
+.act-score-pop {
+  position: fixed;
+  font-family: 'Orbitron', monospace;
+  font-size: 20px; font-weight: 900;
+  pointer-events: none; z-index: 900;
+  opacity: 0; text-shadow: 0 0 20px currentColor;
+}
+.act-score-pop.correct { color: #00e5b0; }
+.act-score-pop.wrong   { color: #ff6b6b; }
+@keyframes scorePop {
+  0%   { opacity:0; transform:translateY(0) scale(.6); }
+  20%  { opacity:1; transform:translateY(-16px) scale(1.15); }
+  65%  { opacity:1; transform:translateY(-40px) scale(1); }
+  100% { opacity:0; transform:translateY(-60px) scale(.85); }
+}
+
+/* ── RESPONSIVE ──────────────────────────────────────── */
+@media (max-width: 768px) {
+  #act-fab { bottom: 80px; right: 18px; width: 54px; height: 54px; }
+
+  #act-modal {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%) scale(.93);
+    width: min(820px, 96vw);
+    max-height: 92vh;
+    border-radius: 20px;
+  }
+  #act-modal.open {
+    transform: translate(-50%, -50%) scale(1);
+  }
+
+  .act-header  { padding: 14px 16px 12px; }
+  .act-levels  { padding: 12px 14px 0; gap: 6px; }
+  .act-body    {
+    padding: 14px 14px 24px;
+    padding-bottom: calc(24px + env(safe-area-inset-bottom));
+  }
+  .act-stat-val  { font-size: 16px; }
+  .act-lvl-btn   { font-size: 10px; padding: 7px 12px; }
+  .ex-q-text     { font-size: 14px; }
+  .ex-input-wrap { flex-direction: column; }
+  .ex-check-btn  { width: 100%; min-height: 44px; font-size: 13px; }
+  .act-opt-btn   { min-height: 44px; font-size: 13px; }
+  .act-stats     { gap: 8px; padding: 10px 12px; }
+  .act-stat-lbl  { font-size: 8px; }
+}
+
+activities.js
+/* ═══════════════════════════════════════════════════════
+   UNITVERSE — activities.js  v2
+   Modal flotante de ejercicios de conversión (3 niveles)
+═══════════════════════════════════════════════════════ */
+
+// ── BANCO DE EJERCICIOS ───────────────────────────────────────────────────────
+const ACT_EXERCISES = {
+  basico: [
+    { cat:"Longitud", context:"Estás midiendo una pared para comprar pintura.",
+      question:"Convierte <b>3 km</b> a metros", valueStr:"3 km",
+      exact:3000, toUnit:"m", tol:0.01,
+      explain:"De kilómetros a metros siempre multiplicas por 1 000.",
+      formula:"3 km × 1 000 = 3 000 m" },
+    { cat:"Longitud", context:"Necesitas saber el largo de un clavo en milímetros.",
+      question:"Convierte <b>5 cm</b> a milímetros", valueStr:"5 cm",
+      exact:50, toUnit:"mm", tol:0.01,
+      explain:"1 cm = 10 mm. Multiplica por 10.",
+      formula:"5 cm × 10 = 50 mm" },
+    { cat:"Masa", context:"Una receta pide ingredientes en gramos pero tienes kilos.",
+      question:"Convierte <b>2 kg</b> a gramos", valueStr:"2 kg",
+      exact:2000, toUnit:"g", tol:0.01,
+      explain:"1 kg = 1 000 g. Multiplica por 1 000.",
+      formula:"2 kg × 1 000 = 2 000 g" },
+    { cat:"Masa", context:"Compraste 500 g de café. ¿Cuántos kg son?",
+      question:"Convierte <b>500 g</b> a kilogramos", valueStr:"500 g",
+      exact:0.5, toUnit:"kg", tol:0.5,
+      explain:"De gramos a kg divide entre 1 000.",
+      formula:"500 g ÷ 1 000 = 0.5 kg" },
+    { cat:"Tiempo", context:"Una película dura 3 horas. ¿Cuántos minutos son?",
+      question:"Convierte <b>3 horas</b> a minutos", valueStr:"3 h",
+      exact:180, toUnit:"min", tol:0.01,
+      explain:"1 hora = 60 minutos. Multiplica por 60.",
+      formula:"3 h × 60 = 180 min" },
+    { cat:"Tiempo", context:"Tu alarma suena en 90 minutos. ¿Cuántas horas son?",
+      question:"Convierte <b>90 minutos</b> a horas", valueStr:"90 min",
+      exact:1.5, toUnit:"h", tol:0.5,
+      explain:"De minutos a horas divide entre 60.",
+      formula:"90 min ÷ 60 = 1.5 h" },
+    { cat:"Temperatura", context:"El agua hierve a 100 °C. ¿Cuánto es en Fahrenheit?",
+      question:"Convierte <b>100 °C</b> a Fahrenheit", valueStr:"100 °C",
+      exact:212, toUnit:"°F", tol:0.5,
+      explain:"Fórmula: °F = (°C × 9/5) + 32",
+      formula:"(100 × 9/5) + 32 = 212 °F" },
+    { cat:"Longitud", context:"Mides el pasillo de tu casa: 4.5 metros.",
+      question:"Convierte <b>4.5 m</b> a centímetros", valueStr:"4.5 m",
+      exact:450, toUnit:"cm", tol:0.01,
+      explain:"1 m = 100 cm. Multiplica por 100.",
+      formula:"4.5 m × 100 = 450 cm" },
+    { cat:"Masa", context:"Un bebé pesa 3 500 gramos al nacer.",
+      question:"Convierte <b>3 500 g</b> a kilogramos", valueStr:"3 500 g",
+      exact:3.5, toUnit:"kg", tol:0.5,
+      explain:"Divide entre 1 000 para pasar de g a kg.",
+      formula:"3 500 g ÷ 1 000 = 3.5 kg" },
+    { cat:"Temperatura", context:"El cuerpo humano tiene fiebre a 38 °C.",
+      question:"Convierte <b>38 °C</b> a Kelvin", valueStr:"38 °C",
+      exact:311.15, toUnit:"K", tol:0.5,
+      explain:"Para pasar de °C a K, suma 273.15.",
+      formula:"38 + 273.15 = 311.15 K" },
+  ],
+  medio: [
+    { cat:"Longitud", context:"Una señal en EE.UU. indica que la ciudad está a 10 millas.",
+      question:"Convierte <b>10 millas</b> a kilómetros", valueStr:"10 mi",
+      exact:16.0934, toUnit:"km", tol:1,
+      explain:"1 milla = 1.60934 km. Multiplica tu valor por ese factor.",
+      formula:"10 mi × 1.60934 = 16.09 km" },
+    { cat:"Longitud", context:"Una persona mide 6 pies de estatura (EE.UU.).",
+      question:"Convierte <b>6 pies</b> a metros", valueStr:"6 ft",
+      exact:1.8288, toUnit:"m", tol:1,
+      explain:"1 pie = 0.3048 m. Multiplica por ese factor.",
+      formula:"6 ft × 0.3048 = 1.8288 m" },
+    { cat:"Masa", context:"Tu amigo pesa 154 libras según su pasaporte estadounidense.",
+      question:"Convierte <b>154 lb</b> a kilogramos", valueStr:"154 lb",
+      exact:69.853, toUnit:"kg", tol:1,
+      explain:"1 libra = 0.453592 kg. Truco rápido: divide entre 2.2.",
+      formula:"154 lb × 0.453592 = 69.85 kg" },
+    { cat:"Temperatura", context:"Una receta americana pide hornear a 350 °F.",
+      question:"Convierte <b>350 °F</b> a grados Celsius", valueStr:"350 °F",
+      exact:176.67, toUnit:"°C", tol:1.5,
+      explain:"Fórmula: °C = (°F − 32) × 5/9",
+      formula:"(350 − 32) × 5/9 = 176.7 °C" },
+    { cat:"Velocidad", context:"El límite de velocidad en autopistas americanas es 70 mph.",
+      question:"Convierte <b>70 mph</b> a km/h", valueStr:"70 mph",
+      exact:112.654, toUnit:"km/h", tol:1,
+      explain:"1 mph = 1.60934 km/h. Multiplica por ese factor.",
+      formula:"70 mph × 1.60934 = 112.65 km/h" },
+    { cat:"Velocidad", context:"Un auto circula a 90 km/h en una carretera.",
+      question:"Convierte <b>90 km/h</b> a metros por segundo", valueStr:"90 km/h",
+      exact:25, toUnit:"m/s", tol:0.5,
+      explain:"Divide km/h entre 3.6 para obtener m/s.",
+      formula:"90 km/h ÷ 3.6 = 25 m/s" },
+    { cat:"Volumen", context:"Compraste 2 galones de leche en EE.UU.",
+      question:"Convierte <b>2 galones US</b> a litros", valueStr:"2 gal US",
+      exact:7.5708, toUnit:"L", tol:1,
+      explain:"1 galón US = 3.78541 L.",
+      formula:"2 × 3.78541 = 7.57 L" },
+    { cat:"Longitud", context:"Un televisor mide 55 pulgadas en diagonal.",
+      question:"Convierte <b>55 pulgadas</b> a centímetros", valueStr:"55 in",
+      exact:139.7, toUnit:"cm", tol:0.5,
+      explain:"1 pulgada = 2.54 cm. Valor exacto por definición.",
+      formula:"55 in × 2.54 = 139.7 cm" },
+    { cat:"Masa", context:"Una persona pesa 11 stone (sistema UK).",
+      question:"Convierte <b>11 stone</b> a kilogramos", valueStr:"11 st",
+      exact:69.853, toUnit:"kg", tol:1,
+      explain:"1 stone = 6.35029 kg.",
+      formula:"11 st × 6.35029 = 69.85 kg" },
+    { cat:"Área", context:"Un campo agrícola mide 5 acres.",
+      question:"Convierte <b>5 acres</b> a hectáreas", valueStr:"5 acres",
+      exact:2.02343, toUnit:"ha", tol:2,
+      explain:"1 acre = 0.404686 ha.",
+      formula:"5 acres × 0.404686 = 2.02 ha" },
+  ],
+  avanzado: [
+    { cat:"Energía", context:"Una porción de comida tiene 400 kcal según la etiqueta.",
+      question:"Convierte <b>400 kcal</b> a Joules", valueStr:"400 kcal",
+      exact:1673600, toUnit:"J", tol:1,
+      explain:"1 kcal = 4 184 J. Multiplica directamente.",
+      formula:"400 kcal × 4 184 = 1 673 600 J" },
+    { cat:"Presión", context:"El manual de tu auto indica inflar las llantas a 35 psi.",
+      question:"Convierte <b>35 psi</b> a kilopascales (kPa)", valueStr:"35 psi",
+      exact:241.316, toUnit:"kPa", tol:1,
+      explain:"1 psi = 6.89476 kPa.",
+      formula:"35 psi × 6.89476 = 241.32 kPa" },
+    { cat:"Potencia", context:"Un motor de automóvil tiene 200 HP.",
+      question:"Convierte <b>200 HP</b> a kilovatios (kW)", valueStr:"200 HP",
+      exact:149.14, toUnit:"kW", tol:1,
+      explain:"1 HP mecánico = 0.7457 kW.",
+      formula:"200 HP × 0.7457 = 149.14 kW" },
+    { cat:"Temperatura", context:"El nitrógeno líquido hierve a 77 K.",
+      question:"Convierte <b>77 K</b> a grados Celsius", valueStr:"77 K",
+      exact:-196.15, toUnit:"°C", tol:1,
+      explain:"°C = K − 273.15.",
+      formula:"77 − 273.15 = −196.15 °C" },
+    { cat:"Velocidad", context:"Un caza supera la barrera del sonido a Mach 1.5.",
+      question:"Convierte <b>Mach 1.5</b> a km/h (20°C, nivel del mar)", valueStr:"Mach 1.5",
+      exact:1852.2, toUnit:"km/h", tol:1.5,
+      explain:"Mach 1 = 343 m/s = 1 234.8 km/h a nivel del mar (20°C).",
+      formula:"1.5 × 1 234.8 = 1 852.2 km/h" },
+    { cat:"Presión", context:"Un equipo de buceo trabaja a 3 atmósferas de presión.",
+      question:"Convierte <b>3 atm</b> a bares", valueStr:"3 atm",
+      exact:3.03975, toUnit:"bar", tol:1,
+      explain:"1 atm = 1.01325 bar.",
+      formula:"3 atm × 1.01325 = 3.04 bar" },
+    { cat:"Energía", context:"Tu aire acondicionado consume 12 000 BTU/h.",
+      question:"Convierte <b>12 000 BTU</b> a kilojulios (kJ)", valueStr:"12 000 BTU",
+      exact:12660.72, toUnit:"kJ", tol:1,
+      explain:"1 BTU = 1.05506 kJ.",
+      formula:"12 000 BTU × 1.05506 = 12 660.72 kJ" },
+    { cat:"Área", context:"Una ciudad ocupa 250 millas cuadradas.",
+      question:"Convierte <b>250 millas²</b> a kilómetros²", valueStr:"250 mi²",
+      exact:647.497, toUnit:"km²", tol:1,
+      explain:"1 mi² = 2.58999 km².",
+      formula:"250 mi² × 2.58999 = 647.5 km²" },
+    { cat:"Potencia", context:"Una caldera de calefacción entrega 24 000 BTU/h.",
+      question:"Convierte <b>24 000 BTU/h</b> a vatios (W)", valueStr:"24 000 BTU/h",
+      exact:7033.7, toUnit:"W", tol:1,
+      explain:"1 BTU/h = 0.293071 W.",
+      formula:"24 000 × 0.293071 = 7 033.7 W" },
+    { cat:"Volumen", context:"Un barril de petróleo estándar (bbl) en el mercado internacional.",
+      question:"Convierte <b>1 barril (bbl)</b> a litros", valueStr:"1 bbl",
+      exact:158.987, toUnit:"L", tol:0.5,
+      explain:"1 bbl (oil barrel US) = 158.987 L = 42 galones US.",
+      formula:"1 bbl × 158.987 = 158.99 L" },
+  ]
+};
+
+// ── ESTADO ────────────────────────────────────────────────────────────────────
+const ACT = {
+  level: 'basico',
+  answered: new Set(),
+  correct: 0,
+  total: 0,
+  streak: 0,
+  queue: [],
+};
+
+function shuffleArr(arr) {
+  const a = [...arr];
+  for (let i = a.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [a[i], a[j]] = [a[j], a[i]];
+  }
+  return a;
+}
+
+function pctErr(user, exact) {
+  if (exact === 0) return Math.abs(user);
+  return Math.abs((user - exact) / exact) * 100;
+}
+
+// ── RENDER EJERCICIOS ─────────────────────────────────────────────────────────
+function actRender() {
+  const body = document.getElementById('act-body');
+  const lvl  = ACT.level;
+  const exs  = ACT.queue;
+
+  if (!exs || exs.length === 0) {
+    body.innerHTML = '<div class="act-complete"><div class="act-complete-icon">🎲</div><div class="act-complete-title">Sin ejercicios</div></div>';
+    return;
+  }
+
+  // Todos respondidos → pantalla de resultado
+  if (ACT.answered.size === exs.length) {
+    const pct  = Math.round((ACT.correct / exs.length) * 100);
+    const icon = pct === 100 ? '🏆' : pct >= 70 ? '🥈' : '📚';
+    const msg  = pct === 100 ? '¡Perfecto! Dominas este nivel.' :
+                 pct >= 70   ? 'Buen trabajo. Sigue practicando.' :
+                               'Repasa los conceptos e inténtalo de nuevo.';
+    body.innerHTML = `
+      <div class="act-complete">
+        <div class="act-complete-icon">${icon}</div>
+        <div class="act-complete-pct">${pct}%</div>
+        <div class="act-complete-title">${ACT.correct} de ${exs.length} correctas</div>
+        <div class="act-complete-desc">${msg}</div>
+        <button class="act-new-btn" onclick="actNewBatch()">▶ NUEVA TANDA</button>
+      </div>`;
+    actUpdateProgress(1);
+    return;
+  }
+
+  // Renderizar tarjetas completas
+  body.innerHTML = exs.map((ex, i) => {
+    const done = ACT.answered.has(i);
+    return `
+    <div class="ex-exercise-card ${lvl} ${done ? 'answered' : ''}" id="ex-card-${i}">
+
+      <div class="ex-card-head">
+        <div class="ex-q-num">${i + 1}</div>
+        <div class="ex-q-meta">
+          <span class="ex-q-cat">${ex.cat}</span>
+          <span class="ex-q-context">${ex.context}</span>
+        </div>
+      </div>
+
+      <div class="ex-card-body">
+        <div class="ex-q-text">¿Cuánto es <span class="ex-val">${ex.valueStr}</span> en ${ex.toUnit}?</div>
+
+        <div class="ex-input-wrap">
+          <div class="ex-input-field-wrap">
+            <input
+              class="ex-input-field"
+              id="ex-inp-${i}"
+              type="number"
+              step="any"
+              placeholder="Escribe tu respuesta..."
+              ${done ? 'disabled' : ''}
+              onkeydown="if(event.key==='Enter') actCheck(${i})"
+            />
+            <span class="ex-unit-label">${ex.toUnit}</span>
+          </div>
+          <button
+            class="ex-check-btn"
+            id="ex-btn-${i}"
+            onclick="actCheck(${i})"
+            ${done ? 'disabled' : ''}
+          >VERIFICAR</button>
+        </div>
+
+        <div class="ex-feedback" id="ex-fb-${i}"></div>
+      </div>
+
+    </div>`;
+  }).join('');
+
+  actUpdateProgress(ACT.answered.size / exs.length);
+}
+
+// ── VERIFICAR RESPUESTA ────────────────────────────────────────────────────────
+function actCheck(idx) {
+  if (ACT.answered.has(idx)) return;
+
+  const ex  = ACT.queue[idx];
+  const inp = document.getElementById(`ex-inp-${idx}`);
+  const fb  = document.getElementById(`ex-fb-${idx}`);
+  const btn = document.getElementById(`ex-btn-${idx}`);
+
+  const val = parseFloat(inp.value);
+  if (isNaN(val)) {
+    inp.style.borderColor = 'rgba(255,184,0,.7)';
+    inp.placeholder = '⚠ Ingresa un número';
+    setTimeout(() => { inp.style.borderColor = ''; inp.placeholder = 'Escribe tu respuesta...'; }, 1400);
+    return;
+  }
+
+  ACT.answered.add(idx);
+  ACT.total++;
+
+  const ok = pctErr(val, ex.exact) <= ex.tol;
+
+  inp.classList.add(ok ? 'correct' : 'wrong');
+  inp.disabled = true;
+  btn.disabled = true;
+  document.getElementById(`ex-card-${idx}`).classList.add('answered');
+
+  if (ok) {
+    ACT.correct++;
+    ACT.streak++;
+    fb.innerHTML = `
+      <div class="ex-fb-result">✅ ¡Correcto!</div>
+      <div class="ex-explain">${ex.explain}</div>
+      <span class="ex-formula">${ex.formula}</span>`;
+    fb.className = 'ex-feedback correct-fb';
+    actPopScore(inp, '+1', 'correct');
+  } else {
+    ACT.streak = 0;
+    const ans = (Math.abs(ex.exact) < 0.01 || Math.abs(ex.exact) > 999999)
+      ? ex.exact.toExponential(3)
+      : parseFloat(ex.exact.toPrecision(6));
+    fb.innerHTML = `
+      <div class="ex-fb-result">❌ Incorrecto — la respuesta es <strong>${ans} ${ex.toUnit}</strong></div>
+      <div class="ex-explain">${ex.explain}</div>
+      <span class="ex-formula">${ex.formula}</span>`;
+    fb.className = 'ex-feedback wrong-fb';
+    actPopScore(inp, '✗', 'wrong');
+  }
+
+  // Mostrar feedback con animación
+  requestAnimationFrame(() => {
+    fb.style.display = 'block';
+    requestAnimationFrame(() => fb.classList.add('show'));
+  });
+
+  actUpdateStats();
+
+  if (ACT.answered.size === ACT.queue.length) {
+    setTimeout(() => actRender(), 900);
+  }
+}
+
+// ── SCORE POP ─────────────────────────────────────────────────────────────────
+function actPopScore(anchor, text, type) {
+  const rect = anchor.getBoundingClientRect();
+  const el   = document.createElement('div');
+  el.className = `act-score-pop ${type}`;
+  el.textContent = text;
+  el.style.cssText = `left:${rect.left + rect.width / 2}px;top:${rect.top}px;transform:translateX(-50%)`;
+  document.body.appendChild(el);
+  el.style.animation = 'scorePop .9s ease forwards';
+  el.addEventListener('animationend', () => el.remove());
+}
+
+// ── STATS ─────────────────────────────────────────────────────────────────────
+function actUpdateStats() {
+  const pct = ACT.total > 0 ? Math.round((ACT.correct / ACT.total) * 100) : 0;
+  document.getElementById('act-stat-score').textContent  = `${ACT.correct}/${ACT.total}`;
+  document.getElementById('act-stat-streak').textContent = ACT.streak;
+  document.getElementById('act-stat-acc').textContent    = ACT.total > 0 ? `${pct}%` : '—';
+
+  // badge eliminado (FAB removido) — sin referencia al DOM
+}
+
+function actUpdateProgress(fraction) {
+  const fill = document.getElementById('act-progress-fill');
+  if (fill) fill.style.width = `${Math.min(fraction * 100, 100)}%`;
+}
+
+// ── NUEVA TANDA ────────────────────────────────────────────────────────────────
+function actNewBatch() {
+  ACT.answered.clear();
+  ACT.correct = 0;
+  ACT.total   = 0;
+  ACT.streak  = 0;
+  ACT.queue   = shuffleArr(ACT_EXERCISES[ACT.level]);
+  actUpdateStats();
+  actUpdateProgress(0);
+  actRender();
+}
+
+// ── CAMBIAR NIVEL ─────────────────────────────────────────────────────────────
+function actSetLevel(lvl, btn) {
+  ACT.level = lvl;
+  document.querySelectorAll('.act-lvl-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  actNewBatch();
+}
+
+// ── ABRIR / CERRAR ────────────────────────────────────────────────────────────
+function actOpen() {
+  const overlay = document.getElementById('act-overlay');
+  const modal   = document.getElementById('act-modal');
+  overlay.style.pointerEvents = '';
+  modal.style.pointerEvents   = '';
+  overlay.classList.add('open');
+  modal.classList.add('open');
+  if (ACT.queue.length === 0) actNewBatch();
+}
+
+function actClose() {
+  const overlay = document.getElementById('act-overlay');
+  const modal   = document.getElementById('act-modal');
+  overlay.classList.remove('open');
+  modal.classList.remove('open');
+  overlay.style.pointerEvents = 'none';
+  modal.style.pointerEvents   = 'none';
+  // Volver al panel principal al cerrar
+  if (typeof openPanel === 'function') openPanel('home');
+}
+
+// ── INIT ──────────────────────────────────────────────────────────────────────
+(function initActivities() {
+  // Escape: solo cerrar si el modal de actividades está abierto
+  document.addEventListener('keydown', e => {
+    if (e.key === 'Escape') {
+      const modal = document.getElementById('act-modal');
+      if (modal && modal.classList.contains('open')) actClose();
+    }
+  });
+  const overlay = document.getElementById('act-overlay');
+  if (overlay) overlay.addEventListener('click', actClose);
+})();
+
+app.js
+/* ═══════════════════════════════════════════════════
+   UNITVERSE — app.js  v5
+   En móvil: cada sección abre un modal idéntico al de
+   Actividades. En desktop: navegación de paneles normal.
+═══════════════════════════════════════════════════ */
+
+// ── PARTICLES ─────────────────────────────────────────────────────────────────
+(function initParticles() {
+  const canvas = document.getElementById('particles-canvas');
+  const ctx    = canvas.getContext('2d');
+  let W, H, particles = [];
+  function resize() { W = canvas.width = window.innerWidth; H = canvas.height = window.innerHeight; }
+  function rp() {
+    return { x:Math.random()*W, y:Math.random()*H,
+      r:Math.random()*1.1+.3, vx:(Math.random()-.5)*.22, vy:(Math.random()-.5)*.22,
+      a:Math.random()*.5+.15,
+      color:['#00e5b0','#00b4ff','#ffb800'][Math.floor(Math.random()*3)] };
+  }
+  function init() { resize(); particles = Array.from({length:80},rp); }
+  function draw() {
+    ctx.clearRect(0,0,W,H);
+    particles.forEach(p=>{
+      ctx.beginPath(); ctx.arc(p.x,p.y,p.r,0,Math.PI*2);
+      ctx.fillStyle=p.color; ctx.globalAlpha=p.a; ctx.fill();
+      p.x+=p.vx; p.y+=p.vy;
+      if(p.x<0||p.x>W)p.vx*=-1; if(p.y<0||p.y>H)p.vy*=-1;
+    });
+    ctx.globalAlpha=1; requestAnimationFrame(draw);
+  }
+  window.addEventListener('resize', resize); init(); draw();
+})();
+
+// ── HELPERS ───────────────────────────────────────────────────────────────────
+function isMobile() { return window.innerWidth <= 768; }
+
+// ── LABELS ────────────────────────────────────────────────────────────────────
+const PANEL_LABELS = {
+  home:'Inicio', sistemas:'Sistemas', uso:'Uso Mundial',
+  metodo:'Método', convertidor:'Convertidor', ejemplos:'Ejemplos', tabla:'Tabla'
+};
+const PANEL_EYEBROWS = {
+  sistemas:    '// LOS TRES SISTEMAS',
+  uso:         '// USO POR REGIONES',
+  metodo:      '// METODOLOGÍA',
+  convertidor: '// HERRAMIENTA INTERACTIVA',
+  ejemplos:    '// APRENDE PASO A PASO',
+  tabla:       '// REFERENCIA COMPLETA'
+};
+
+// ── PANEL NAVIGATION (desktop) ────────────────────────────────────────────────
+let currentPanel = 'home';
+
+function openPanel(id) {
+  if (isMobile()) {
+    if (id === 'home') { sectionModalClose(); return; }
+    sectionModalOpen(id);
+    return;
+  }
+  // Desktop original
+  if (id === currentPanel) return;
+  const prev = document.getElementById('panel-' + currentPanel);
+  if (prev) { prev.classList.remove('active'); prev.classList.add('exit'); setTimeout(() => prev.classList.remove('exit'), 350); }
+  const next = document.getElementById('panel-' + id);
+  if (next) { next.classList.add('active'); next.scrollTop = 0; }
+  document.querySelectorAll('.mn-btn').forEach(b => b.classList.toggle('active', b.dataset.panel === id));
+  const bc = document.getElementById('bc-current');
+  if (bc) bc.textContent = PANEL_LABELS[id] || id;
+  currentPanel = id;
+}
+
+function initCardListeners() {
+  document.querySelectorAll('.hq-card[data-panel]').forEach(card => {
+    card.addEventListener('click', () => openPanel(card.dataset.panel));
+  });
+  document.querySelectorAll('.mn-btn[data-panel]').forEach(btn => {
+    btn.addEventListener('click', () => openPanel(btn.dataset.panel));
+  });
+}
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', initCardListeners);
+} else {
+  initCardListeners();
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   SECTION MODAL — idéntico al de Actividades
+   Solo en móvil. Renderiza contenido fresco en cada apertura.
+═══════════════════════════════════════════════════════════════════════════ */
+
+function sectionModalOpen(id) {
+  const overlay = document.getElementById('sec-modal-overlay');
+  const modal   = document.getElementById('sec-modal');
+  const title   = document.getElementById('sec-modal-title');
+  const eyebrow = document.getElementById('sec-modal-eyebrow');
+  const body    = document.getElementById('sec-modal-body');
+
+  title.textContent   = PANEL_LABELS[id]   || id;
+  eyebrow.textContent = PANEL_EYEBROWS[id] || '//';
+  body.innerHTML = '';
+  body.scrollTop = 0;
+
+  switch (id) {
+    case 'sistemas':    body.appendChild(buildSistemas());     break;
+    case 'uso':         body.appendChild(buildUsoModal());     break;
+    case 'metodo':      body.appendChild(buildMetodoModal());  break;
+    case 'convertidor': body.appendChild(buildConvModal());    break;
+    case 'ejemplos':    body.appendChild(buildEjemplosModal());break;
+    case 'tabla':       body.appendChild(buildTablaModal());   break;
+    default: body.innerHTML = '<p style="color:#5a7a9a;text-align:center;padding:40px">Sección en desarrollo</p>';
+  }
+
+  overlay.style.pointerEvents = '';
+  modal.style.pointerEvents   = '';
+  overlay.classList.add('open');
+  modal.classList.add('open');
+
+  document.querySelectorAll('.mn-btn').forEach(b =>
+    b.classList.toggle('active', b.dataset.panel === id));
+  currentPanel = id;
+}
+
+function sectionModalClose() {
+  const overlay = document.getElementById('sec-modal-overlay');
+  const modal   = document.getElementById('sec-modal');
+  overlay.classList.remove('open');
+  modal.classList.remove('open');
+  overlay.style.pointerEvents = 'none';
+  modal.style.pointerEvents   = 'none';
+  document.querySelectorAll('.mn-btn').forEach(b =>
+    b.classList.toggle('active', b.dataset.panel === 'home'));
+  currentPanel = 'home';
+}
+
+function openMenu() {
+  const overlay = document.getElementById('mn-overlay');
+  const drawer  = document.getElementById('mn-drawer');
+  if (!overlay || !drawer) return;
+  overlay.classList.add('open');
+  drawer.classList.add('open');
+  overlay.setAttribute('aria-hidden', 'false');
+  drawer.setAttribute('aria-hidden', 'false');
+}
+
+function closeMenu() {
+  const overlay = document.getElementById('mn-overlay');
+  const drawer  = document.getElementById('mn-drawer');
+  if (!overlay || !drawer) return;
+  overlay.classList.remove('open');
+  drawer.classList.remove('open');
+  overlay.setAttribute('aria-hidden', 'true');
+  drawer.setAttribute('aria-hidden', 'true');
+}
+
+function toggleMenu() {
+  const drawer = document.getElementById('mn-drawer');
+  if (drawer && drawer.classList.contains('open')) {
+    closeMenu();
+  } else {
+    openMenu();
+  }
+}
+
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape') {
+    const m = document.getElementById('sec-modal');
+    if (m && m.classList.contains('open')) sectionModalClose();
+    closeMenu();
+  }
+});
+document.addEventListener('DOMContentLoaded', () => {
+  const ov = document.getElementById('sec-modal-overlay');
+  if (ov) ov.addEventListener('click', sectionModalClose);
+
+  const navOv = document.getElementById('mn-overlay');
+  if (navOv) navOv.addEventListener('click', closeMenu);
+
+  document.querySelectorAll('.mn-drawer-item').forEach(item => {
+    item.addEventListener('click', () => {
+      const panel = item.dataset.panel;
+      if (panel && typeof openPanel === 'function') openPanel(panel);
+      closeMenu();
+    });
+  });
+});
+
+/* ───────────────────────────────────────────────────────────────────────────
+   BUILDERS — cada función devuelve un nodo con el contenido
+─────────────────────────────────────────────────────────────────────────── */
+
+// ── SISTEMAS ─────────────────────────────────────────────────────────────────
+let activeSysCard = null;
+
+function buildSistemas() {
+  const wrap = document.createElement('div');
+  wrap.innerHTML = `
+    <div class="sys-cards-grid">
+      <div class="sys-card si"  onclick="modalToggleSys('si',this)">
+        <div class="card-glow"></div><div class="card-icon">🌍</div>
+        <div class="card-tag si">SI</div>
+        <h3 class="card-name">Sistema Internacional</h3>
+        <p class="card-short">Usado por más de 195 países. Basado en potencias de 10. Estándar científico universal desde 1960.</p>
+        <div class="card-footer"><span class="card-btn si">VER DETALLE ›</span></div>
+      </div>
+      <div class="sys-card imp" onclick="modalToggleSys('imp',this)">
+        <div class="card-glow"></div><div class="card-icon">🏴󠁧󠁢󠁥󠁮󠁧󠁿</div>
+        <div class="card-tag imp">IMPERIAL</div>
+        <h3 class="card-name">Imperial UK</h3>
+        <p class="card-short">Sistema histórico británico estandarizado en 1824. Millas, pintas y stones aún dominan la vida cotidiana.</p>
+        <div class="card-footer"><span class="card-btn imp">VER DETALLE ›</span></div>
+      </div>
+      <div class="sys-card us"  onclick="modalToggleSys('us',this)">
+        <div class="card-glow"></div><div class="card-icon">🇺🇸</div>
+        <div class="card-tag us">EE.UU.</div>
+        <h3 class="card-name">EE.UU. Consuetudinario</h3>
+        <p class="card-short">Similar al imperial pero con diferencias clave en volumen. Uno de los únicos países sin SI oficial.</p>
+        <div class="card-footer"><span class="card-btn us">VER DETALLE ›</span></div>
+      </div>
+    </div>
+    <div class="sys-detail-panel" id="sec-sys-detail">
+      <button class="detail-close" onclick="modalCloseSys()">✕ CERRAR</button>
+      <div class="detail-content" id="sec-sys-content"></div>
+    </div>`;
+  return wrap;
+}
+
+function modalToggleSys(key, cardEl) {
+  const panel   = document.getElementById('sec-sys-detail');
+  const content = document.getElementById('sec-sys-content');
+  if (!panel || !content) return;
+  if (activeSysCard === key && panel.classList.contains('open')) { modalCloseSys(); return; }
+  activeSysCard = key;
+  document.querySelectorAll('#sec-modal .sys-card').forEach(c => c.classList.remove('active'));
+  cardEl.classList.add('active');
+  const d = SYS_DETAIL[key];
+  let html = `<h3>${d.title}</h3>`;
+  d.blocks.forEach(b => {
+    html += `<div class="detail-block ${d.cls}"><h4>${b.heading}</h4>`;
+    if      (b.type==='world') html += `<div class="world-use-box">${b.text}</div>`;
+    else if (b.type==='tags')  html += `<div class="unit-tags">${b.tags.map(t=>`<span class="unit-tag">${t}</span>`).join('')}</div>`;
+    else                       html += `<p>${b.text}</p>`;
+    html += `</div>`;
+  });
+  content.innerHTML = html;
+  panel.classList.add('open');
+  setTimeout(() => panel.scrollIntoView({behavior:'smooth', block:'nearest'}), 50);
+}
+
+function modalCloseSys() {
+  const panel = document.getElementById('sec-sys-detail');
+  if (panel) panel.classList.remove('open');
+  document.querySelectorAll('#sec-modal .sys-card').forEach(c => c.classList.remove('active'));
+  activeSysCard = null;
+}
+
+// Desktop toggleSys original
+function toggleSys(key) {
+  const panel   = document.getElementById('sys-detail-panel');
+  const content = document.getElementById('detail-content');
+  if (!panel) return;
+  if (activeSysCard === key && panel.classList.contains('open')) { closeSys(); return; }
+  activeSysCard = key;
+  document.querySelectorAll('#panel-sistemas .sys-card').forEach(c => c.classList.remove('active'));
+  const card = document.querySelector('#panel-sistemas .sys-card.' + key);
+  if (card) card.classList.add('active');
+  const d = SYS_DETAIL[key];
+  let html = `<h3>${d.title}</h3>`;
+  d.blocks.forEach(b => {
+    html += `<div class="detail-block ${d.cls}"><h4>${b.heading}</h4>`;
+    if      (b.type==='world') html += `<div class="world-use-box">${b.text}</div>`;
+    else if (b.type==='tags')  html += `<div class="unit-tags">${b.tags.map(t=>`<span class="unit-tag">${t}</span>`).join('')}</div>`;
+    else                       html += `<p>${b.text}</p>`;
+    html += `</div>`;
+  });
+  content.innerHTML = html;
+  panel.classList.add('open');
+  panel.scrollIntoView({behavior:'smooth', block:'nearest'});
+}
+function closeSys() {
+  const p = document.getElementById('sys-detail-panel');
+  if (p) p.classList.remove('open');
+  document.querySelectorAll('#panel-sistemas .sys-card').forEach(c => c.classList.remove('active'));
+  activeSysCard = null;
+}
+
+// ── USO MUNDIAL ───────────────────────────────────────────────────────────────
+function usoHTML() {
+  return USO_MUNDIAL.map(u => `
+    <div class="uso-card">
+      <div class="uso-header">
+        <span class="uso-flag">${u.flag}</span>
+        <span class="uso-region">${u.region}</span>
+        <span class="uso-sys-pill ${u.sys}">${u.sys.toUpperCase()}</span>
+      </div>
+      <ul class="uso-list">
+        ${u.items.map(i=>`<li style="color:var(${u.accentVar})">${i}</li>`).join('')}
+      </ul>
+    </div>`).join('');
+}
+(function() { const g=document.getElementById('uso-grid'); if(g) g.innerHTML=usoHTML(); })();
+
+function buildUsoModal() {
+  const wrap = document.createElement('div');
+  wrap.className = 'uso-grid';
+  wrap.innerHTML = usoHTML();
+  return wrap;
+}
+
+// ── MÉTODO ────────────────────────────────────────────────────────────────────
+function methodsHTML(prefix) {
+  return Object.entries(METHODS).map(([k,m],i) => `
+    <div class="method-panel ${i===0?'active':''}" id="${prefix}-method-${k}">
+      <div class="method-steps">
+        ${m.steps.map((s,si)=>`
+          <div class="mstep">
+            <div class="mstep-num">${si+1}</div>
+            <div class="mstep-body"><h4>${s.title}</h4><p>${s.desc}</p></div>
+          </div>`).join('')}
+      </div>
+      <div class="formula-terminal">
+        ${m.terminal.map(l=>`
+          <div class="fline">
+            <span class="flabel">${l.label}</span>
+            <span class="fval ${l.cls}">${l.val}</span>
+          </div>`).join('')}
+      </div>
+    </div>`).join('');
+}
+(function() {
+  const c=document.getElementById('method-panels');
+  if(c) c.innerHTML=methodsHTML('desk');
+})();
+
+function buildMetodoModal() {
+  const wrap = document.createElement('div');
+  wrap.innerHTML = `
+    <div class="method-tabs" id="sec-mtabs">
+      ${Object.keys(METHODS).map((k,i)=>`
+        <button class="mtab ${i===0?'active':''}"
+          onclick="secShowMethod('${k}',this)">${k==='factor'?'Factor de conversión':k==='proporcion'?'Regla de tres':'Cadena de unidades'}</button>`).join('')}
+    </div>
+    <div id="sec-mpanels">${methodsHTML('sec')}</div>`;
+  return wrap;
+}
+
+function secShowMethod(id, btn) {
+  document.querySelectorAll('#sec-mpanels .method-panel').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('#sec-mtabs .mtab').forEach(t=>t.classList.remove('active'));
+  const p=document.getElementById('sec-method-'+id); if(p) p.classList.add('active');
+  btn.classList.add('active');
+}
+function showMethod(id, btn) {
+  document.querySelectorAll('#method-panels .method-panel').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('#panel-metodo .mtab').forEach(t=>t.classList.remove('active'));
+  const p=document.getElementById('desk-method-'+id); if(p) p.classList.add('active');
+  btn.classList.add('active');
+}
+
+// ── CONVERTIDOR ───────────────────────────────────────────────────────────────
+let activeConvCat='Longitud', secActiveConvCat='Longitud';
+
+(function(){
+  const s=document.getElementById('conv-cats'); if(!s) return;
+  s.innerHTML=Object.keys(CONV_UNITS).map(cat=>
+    `<button class="cctab ${cat===activeConvCat?'active':''}"
+      onclick="setConvCat('${cat}',this)">${cat}</button>`).join('');
+  buildConvSelects();
+})();
+
+function calcConvert(val,fi,ti,units,cat) {
+  if(cat==='Temperatura'){
+    const f=units[fi].special,t=units[ti].special;
+    if(f===t) return val;
+    if(f==='C'&&t==='F') return val*9/5+32;
+    if(f==='F'&&t==='C') return (val-32)*5/9;
+    if(f==='C'&&t==='K') return val+273.15;
+    if(f==='K'&&t==='C') return val-273.15;
+    if(f==='F'&&t==='K') return (val-32)*5/9+273.15;
+    if(f==='K'&&t==='F') return (val-273.15)*9/5+32;
+    return val;
+  }
+  return (val*units[fi].factor)/units[ti].factor;
+}
+function formatNum(n) {
+  return (Math.abs(n)<.0001||Math.abs(n)>9999999)?n.toExponential(4):parseFloat(n.toPrecision(7)).toString();
+}
+
+function setConvCat(cat,btn) {
+  activeConvCat=cat;
+  document.querySelectorAll('#panel-convertidor .cctab').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active'); buildConvSelects();
+}
+function buildConvSelects() {
+  const units=CONV_UNITS[activeConvCat];
+  document.getElementById('cv-from').innerHTML=units.map((u,i)=>`<option value="${i}">${u.label}</option>`).join('');
+  document.getElementById('cv-to').innerHTML=units.map((u,i)=>`<option value="${i}" ${i===1?'selected':''}>${u.label}</option>`).join('');
+  doConvert();
+}
+function doConvert() {
+  const val=parseFloat(document.getElementById('cv-input').value);
+  const fi=parseInt(document.getElementById('cv-from').value);
+  const ti=parseInt(document.getElementById('cv-to').value);
+  const units=CONV_UNITS[activeConvCat]; if(isNaN(val)||!units) return;
+  const result=calcConvert(val,fi,ti,units,activeConvCat);
+  const disp=formatNum(result);
+  const fl=units[fi].label.replace(/\(.*\)/,'').trim();
+  const tl=units[ti].label.replace(/\(.*\)/,'').trim();
+  document.getElementById('cv-val').textContent=`${disp} ${tl}`;
+  document.getElementById('cv-formula').textContent=`${val} ${fl} = ${disp} ${tl}`;
+}
+
+function buildConvModal() {
+  secActiveConvCat='Longitud';
+  const wrap=document.createElement('div');
+  wrap.className='conv-box';
+  wrap.style.cssText='max-width:100%;box-shadow:none;border:none;padding:0;background:transparent';
+  wrap.innerHTML=`
+    <div class="conv-cat-strip" id="sec-conv-cats">
+      ${Object.keys(CONV_UNITS).map(cat=>
+        `<button class="cctab ${cat===secActiveConvCat?'active':''}"
+          onclick="secSetConvCat('${cat}',this)">${cat}</button>`).join('')}
+    </div>
+    <div class="conv-inputs" style="grid-template-columns:1fr">
+      <div class="conv-field"><label>VALOR</label><input type="number" id="sec-cv-input" value="1" oninput="secDoConvert()"/></div>
+      <div class="conv-field"><label>DE</label><select id="sec-cv-from" onchange="secDoConvert()"></select></div>
+      <div class="conv-field"><label>A</label><select id="sec-cv-to" onchange="secDoConvert()"></select></div>
+    </div>
+    <div class="conv-result-panel">
+      <div class="conv-result-label">RESULTADO</div>
+      <div class="conv-result-value" id="sec-cv-val">—</div>
+      <div class="conv-result-formula" id="sec-cv-formula"></div>
+    </div>`;
+  setTimeout(()=>secBuildConvSelects(),0);
+  return wrap;
+}
+function secSetConvCat(cat,btn) {
+  secActiveConvCat=cat;
+  document.querySelectorAll('#sec-conv-cats .cctab').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active'); secBuildConvSelects();
+}
+function secBuildConvSelects() {
+  const units=CONV_UNITS[secActiveConvCat];
+  const f=document.getElementById('sec-cv-from'), t=document.getElementById('sec-cv-to');
+  if(!f||!t||!units) return;
+  f.innerHTML=units.map((u,i)=>`<option value="${i}">${u.label}</option>`).join('');
+  t.innerHTML=units.map((u,i)=>`<option value="${i}" ${i===1?'selected':''}>${u.label}</option>`).join('');
+  secDoConvert();
+}
+function secDoConvert() {
+  const inp=document.getElementById('sec-cv-input');
+  const f=document.getElementById('sec-cv-from'), t=document.getElementById('sec-cv-to');
+  const vEl=document.getElementById('sec-cv-val'), fEl=document.getElementById('sec-cv-formula');
+  if(!inp||!f||!t) return;
+  const val=parseFloat(inp.value), fi=parseInt(f.value), ti=parseInt(t.value);
+  const units=CONV_UNITS[secActiveConvCat]; if(isNaN(val)||!units) return;
+  const result=calcConvert(val,fi,ti,units,secActiveConvCat);
+  const disp=formatNum(result);
+  const fl=units[fi].label.replace(/\(.*\)/,'').trim();
+  const tl=units[ti].label.replace(/\(.*\)/,'').trim();
+  vEl.textContent=`${disp} ${tl}`;
+  fEl.textContent=`${val} ${fl} = ${disp} ${tl}`;
+}
+
+// ── EJEMPLOS ──────────────────────────────────────────────────────────────────
+let activeLevel='basico', secActiveLevel='basico';
+
+function exCardHTML(ex,i,level,lvlLabel) {
+  return `
+  <div class="ex-card ${level}" onclick="openExModal('${level}',${i})" style="cursor:pointer">
+    <div class="ex-card-top-bar"></div>
+    <div class="ex-head">
+      <div class="ex-head-row">
+        <span class="ex-cat-tag">${ex.cat.toUpperCase()}</span>
+        <span class="ex-lvl-tag">${lvlLabel}</span>
+      </div>
+      <div class="ex-title">${ex.title}</div>
+      <div class="ex-context">${ex.context}</div>
+    </div>
+    <div class="ex-body">
+      <div class="ex-steps">
+        ${ex.steps.map((s,si)=>`
+          <div class="ex-step">
+            <div class="ex-step-n">${si+1}</div>
+            <div class="ex-step-txt"><b>${s[0]}:</b> <code>${s[1]}</code></div>
+          </div>`).join('')}
+      </div>
+      <div class="ex-result-row">
+        <span class="ex-result-lbl">RESULTADO</span>
+        <span class="ex-result-val">${ex.result}</span>
+      </div>
+      <div class="ex-tip"><b>Truco:</b> ${ex.tip}</div>
+    </div>
+    <div class="ex-card-hint">👁 Ver detalle</div>
+  </div>`;
+}
+
+function renderExamples() {
+  const lbl={basico:'BÁSICO',medio:'MEDIO',avanzado:'AVANZADO'}[activeLevel];
+  const g=document.getElementById('ex-grid'); if(!g) return;
+  g.innerHTML=EXAMPLES[activeLevel].map((ex,i)=>exCardHTML(ex,i,activeLevel,lbl)).join('');
+}
+function showLevel(level,btn) {
+  activeLevel=level;
+  document.querySelectorAll('#panel-ejemplos .lvl-tab').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active'); renderExamples();
+}
+
+function buildEjemplosModal() {
+  const wrap=document.createElement('div');
+  wrap.innerHTML=`
+    <div class="level-tabs" id="sec-lvl-tabs">
+      <button class="lvl-tab basico active" onclick="secShowLevel('basico',this)"><span class="lvl-dot"></span>BÁSICO</button>
+      <button class="lvl-tab medio"         onclick="secShowLevel('medio',this)"><span class="lvl-dot"></span>MEDIO</button>
+      <button class="lvl-tab avanzado"      onclick="secShowLevel('avanzado',this)"><span class="lvl-dot"></span>AVANZADO</button>
+    </div>
+    <div class="ex-grid" id="sec-ex-grid"></div>`;
+  setTimeout(()=>secRenderExamples(),0);
+  return wrap;
+}
+function secShowLevel(level,btn) {
+  secActiveLevel=level;
+  document.querySelectorAll('#sec-lvl-tabs .lvl-tab').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active'); secRenderExamples();
+}
+function secRenderExamples() {
+  const lbl={basico:'BÁSICO',medio:'MEDIO',avanzado:'AVANZADO'}[secActiveLevel];
+  const g=document.getElementById('sec-ex-grid'); if(!g) return;
+  g.innerHTML=EXAMPLES[secActiveLevel].map((ex,i)=>exCardHTML(ex,i,secActiveLevel,lbl)).join('');
+}
+renderExamples();
+
+// ── TABLA ─────────────────────────────────────────────────────────────────────
+let tblSys='TODOS', tblCat='Todas', secTblSys='TODOS', secTblCat='Todas';
+
+function tableRowHTML(r,cols) {
+  return `<tr>
+    <td>${r[0]}</td>
+    <td style="font-weight:600;color:#fff">${r[1]}</td>
+    <td style="font-weight:600;color:#fff">${r[2]}</td>
+    <td class="td-mono">${r[3]}</td>
+    <td><span class="sys-pill ${r[4]}">${SYS_LABELS[r[4]]||r[4]}</span></td>
+    <td style="font-size:11px;color:#5a7a9a">${r[5]}</td>
+    ${cols===7?`<td style="font-size:11px;color:#5a7a9a;font-style:italic">${r[6]}</td>`:''}
+  </tr>`;
+}
+function noResultsHTML() {
+  return `<tr><td colspan="7" style="text-align:center;padding:26px;color:#5a7a9a">Sin resultados</td></tr>`;
+}
+
+(function(){
+  const cats=['Todas',...new Set(CONV_DATA.map(r=>r[5]))];
+  const s=document.getElementById('tbl-cats'); if(!s) return;
+  s.innerHTML=cats.map(c=>`<button class="tcatbtn ${c===tblCat?'active':''}"
+    onclick="setTblCat('${c}',this)">${c}</button>`).join('');
+})();
+
+function setSys(val,btn) {
+  tblSys=val; document.querySelectorAll('#panel-tabla .tsb').forEach(b=>b.classList.remove('active')); btn.classList.add('active'); renderTable();
+}
+function setTblCat(val,btn) {
+  tblCat=val; document.querySelectorAll('#panel-tabla .tcatbtn').forEach(b=>b.classList.remove('active')); btn.classList.add('active'); renderTable();
+}
+function renderTable() {
+  const q=(document.getElementById('tbl-q').value||'').toLowerCase();
+  const rows=CONV_DATA.filter(r=>{
+    const sys=r[4],ok=tblSys==='TODOS'||sys===tblSys||(tblSys==='CROSS'&&sys.includes('-'));
+    return ok&&(tblCat==='Todas'||r[5]===tblCat)&&(!q||r.join(' ').toLowerCase().includes(q));
+  });
+  document.getElementById('tbl-count').textContent=`${rows.length} conversiones encontradas`;
+  document.getElementById('tbl-body').innerHTML=rows.length?rows.map(r=>tableRowHTML(r,7)).join(''):noResultsHTML();
+}
+renderTable();
+
+function buildTablaModal() {
+  secTblSys='TODOS'; secTblCat='Todas';
+  const cats=['Todas',...new Set(CONV_DATA.map(r=>r[5]))];
+  const wrap=document.createElement('div');
+  wrap.innerHTML=`
+    <div class="tbl-controls">
+      <input class="tbl-search" id="sec-tbl-q" type="text"
+        placeholder="🔍  Buscar: pulgada, galón, BTU..." oninput="secRenderTable()"/>
+      <div class="tbl-sys-btns">
+        <button class="tsb all active" onclick="secSetSys('TODOS',this)">TODOS</button>
+        <button class="tsb si"         onclick="secSetSys('SI',this)">SI</button>
+        <button class="tsb imp"        onclick="secSetSys('IMP',this)">IMPERIAL</button>
+        <button class="tsb us"         onclick="secSetSys('US',this)">EE.UU.</button>
+        <button class="tsb cross"      onclick="secSetSys('CROSS',this)">CRUZADAS</button>
+      </div>
+    </div>
+    <div class="tbl-cat-strip" id="sec-tbl-cats">
+      ${cats.map(c=>`<button class="tcatbtn ${c==='Todas'?'active':''}"
+        onclick="secSetTblCat('${c}',this)">${c}</button>`).join('')}
+    </div>
+    <div class="tbl-count" id="sec-tbl-count"></div>
+    <div class="tbl-wrap">
+      <table id="sec-main-table">
+        <thead><tr>
+          <th>Conversión</th><th>De</th><th>A</th>
+          <th>Fórmula</th><th>Sistema</th><th>Categoría</th>
+        </tr></thead>
+        <tbody id="sec-tbl-body"></tbody>
+      </table>
+    </div>`;
+  setTimeout(()=>secRenderTable(),0);
+  return wrap;
+}
+function secSetSys(val,btn) {
+  secTblSys=val; document.querySelectorAll('#sec-modal .tsb').forEach(b=>b.classList.remove('active')); btn.classList.add('active'); secRenderTable();
+}
+function secSetTblCat(val,btn) {
+  secTblCat=val; document.querySelectorAll('#sec-modal .tcatbtn').forEach(b=>b.classList.remove('active')); btn.classList.add('active'); secRenderTable();
+}
+function secRenderTable() {
+  const q=(document.getElementById('sec-tbl-q').value||'').toLowerCase();
+  const rows=CONV_DATA.filter(r=>{
+    const sys=r[4],ok=secTblSys==='TODOS'||sys===secTblSys||(secTblSys==='CROSS'&&sys.includes('-'));
+    return ok&&(secTblCat==='Todas'||r[5]===secTblCat)&&(!q||r.join(' ').toLowerCase().includes(q));
+  });
+  const cnt=document.getElementById('sec-tbl-count');
+  const body=document.getElementById('sec-tbl-body');
+  if(cnt) cnt.textContent=`${rows.length} conversiones encontradas`;
+  if(body) body.innerHTML=rows.length?rows.map(r=>tableRowHTML(r,6)).join(''):noResultsHTML();
+}
+
+// ── MODAL DETALLE EJEMPLO ─────────────────────────────────────────────────────
+function openExModal(level,idx) {
+  const ex=EXAMPLES[level][idx];
+  const lbl={basico:'BÁSICO',medio:'MEDIO',avanzado:'AVANZADO'}[level];
+  document.getElementById('exm-cat').textContent     = ex.cat.toUpperCase();
+  document.getElementById('exm-lvl').textContent     = lbl;
+  document.getElementById('exm-lvl').className       = `exm-lvl-tag ${level}`;
+  document.getElementById('exm-title').textContent   = ex.title;
+  document.getElementById('exm-context').textContent = ex.context;
+  document.getElementById('exm-steps').innerHTML = ex.steps.map((s,i)=>`
+    <div class="exm-step ${level}">
+      <div class="exm-step-num ${level}">${i+1}</div>
+      <div class="exm-step-body">
+        <span class="exm-step-label">${s[0]}</span>
+        <code class="exm-step-code">${s[1]}</code>
+      </div>
+    </div>`).join('');
+  document.getElementById('exm-result').className      = `exm-result ${level}`;
+  document.getElementById('exm-result-val').textContent = ex.result;
+  document.getElementById('exm-tip').innerHTML          = `<b>💡 Truco:</b> ${ex.tip}`;
+  document.getElementById('exm-bar').className          = `exm-top-bar ${level}`;
+  document.getElementById('ex-modal-overlay').classList.add('open');
+  document.getElementById('ex-modal').classList.add('open');
+}
+function closeExModal() {
+  const o=document.getElementById('ex-modal-overlay');
+  const m=document.getElementById('ex-modal');
+  if(o){o.classList.remove('open');o.style.pointerEvents='none';}
+  if(m){m.classList.remove('open');m.style.pointerEvents='none';}
+}
+document.addEventListener('keydown',e=>{
+  if(e.key==='Escape'){
+    const m=document.getElementById('ex-modal');
+    if(m&&m.classList.contains('open')) closeExModal();
+  }
+});
+document.addEventListener('DOMContentLoaded',()=>{
+  const o=document.getElementById('ex-modal-overlay');
+  if(o) o.addEventListener('click',closeExModal);
+});
+
+data.js
+/* ═══════════════════════════════════════════════════════════
+   UNITVERSE — data.js
+   Todos los datos: conversiones, ejemplos, sistemas, uso mundial
+═══════════════════════════════════════════════════════════ */
+
+// ── DETALLE DE CADA SISTEMA ──────────────────────────────────────────────────
+const SYS_DETAIL = {
+  si: {
+    title: "Sistema Internacional (SI) — El lenguaje universal de la ciencia",
+    cls: "detail-si",
+    blocks: [
+      { heading: "Historia y origen",
+        text: "Adoptado en 1960, el SI es evolución del sistema métrico decimal creado en Francia (1795). Su principio: base 10. Cada unidad es 10 veces la anterior, haciendo las conversiones extremadamente simples."
+      },
+      { heading: "Dónde se usa",
+        type: "world",
+        text: "Prácticamente todo el mundo: Europa, América Latina, África, Asia, Oceanía. Sistema oficial de la ciencia, medicina, industria y comercio internacional en 195 países."
+      },
+      { heading: "Unidades base",
+        type: "tags",
+        tags: ["metro (m)","kilogramo (kg)","segundo (s)","kelvin (K)","amperio (A)","mol (mol)","candela (cd)"]
+      },
+      { heading: "Prefijos clave",
+        type: "tags",
+        tags: ["kilo (×1000)","centi (÷100)","mili (÷1000)","mega (×10⁶)","micro (×10⁻⁶)","nano (×10⁻⁹)"]
+      }
+    ]
+  },
+  imp: {
+    title: "Sistema Imperial Británico — Historia y tradición",
+    cls: "detail-imp",
+    blocks: [
+      { heading: "Historia y origen",
+        text: "Estandarizado en el Reino Unido en 1824. Sus raíces son medievales: la pulgada (ancho del pulgar), el pie (longitud del pie humano), la yarda (brazo extendido). El UK adoptó el SI en 1965 pero muchas unidades persisten."
+      },
+      { heading: "Dónde se usa hoy",
+        type: "world",
+        text: "Reino Unido (distancias, velocidad, peso corporal), Irlanda, India (parcialmente), países de la Commonwealth. Las millas en carretera y la pinta de cerveza son íconos culturales que sobreviven al SI."
+      },
+      { heading: "Unidades características",
+        type: "tags",
+        tags: ["pulgada (in)","pie (ft)","yarda (yd)","milla (mi)","stone (st)","libra (lb)","galón UK (4.546 L)","pinta UK (568 mL)","tonelada larga (1016 kg)","BTU","furlong"]
+      },
+      { heading: "Diferencia clave con EE.UU.",
+        text: "Las unidades de volumen son distintas: el galón imperial (4.546 L) es un 20% mayor que el galón US (3.785 L). Lo mismo para pintas, cuartos y onzas fluidas. Longitud y masa son iguales en ambos sistemas."
+      }
+    ]
+  },
+  us: {
+    title: "Sistema Consuetudinario de EE.UU. — La excepción mundial",
+    cls: "detail-us",
+    blocks: [
+      { heading: "Historia y origen",
+        text: "EE.UU. adoptó las unidades inglesas antes de la estandarización imperial de 1824. En 1866 se legalizó el SI pero nunca fue obligatorio. En 1975 el Metric Conversion Act no logró completar la transición."
+      },
+      { heading: "Dónde se usa",
+        type: "world",
+        text: "EE.UU. (uso cotidiano masivo), Liberia y Myanmar (oficialmente). La aviación y la medicina en EE.UU. usan unidades mixtas. El barril de petróleo (bbl, 158.99 L) es el estándar mundial del mercado energético."
+      },
+      { heading: "Unidades exclusivas o diferentes",
+        type: "tags",
+        tags: ["galón US (3.785 L)","pinta US (473 mL)","taza / cup (237 mL)","ton corta (907 kg)","Rankine (°R)","barril petróleo (bbl)","cucharada (14.8 mL)","BTU/h"]
+      },
+      { heading: "Lo que comparte con Imperial",
+        text: "Longitud (pies, millas), masa (libras, onzas) y temperatura (Fahrenheit) son iguales en UK y US. Las diferencias están casi exclusivamente en las unidades de volumen líquido y algunas de masa (toneladas)."
+      }
+    ]
+  }
+};
+
+// ── USO MUNDIAL ──────────────────────────────────────────────────────────────
+const USO_MUNDIAL = [
+  { flag:"🌎", region:"América Latina", sys:"si",  accentVar:"--si",
+    items:["km/h en velocidad de tránsito","Litros en combustible y bebidas","kg y g en mercados y cocina","Hectáreas en agricultura","°C en temperatura cotidiana"] },
+  { flag:"🇬🇧", region:"Reino Unido",    sys:"imp", accentVar:"--imp",
+    items:["Millas y mph en carreteras","Stone + libras para peso corporal","Pintas en pubs (cerveza)","Pies/pulgadas en estatura","°C en meteorología oficial"] },
+  { flag:"🇺🇸", region:"Estados Unidos", sys:"us",  accentVar:"--us",
+    items:["Millas y mph en carreteras","Libras y onzas en peso y cocina","Galones en combustible","°F en temperatura cotidiana","Pies/pulgadas en construcción"] },
+  { flag:"🇪🇺", region:"Europa continental", sys:"si", accentVar:"--si",
+    items:["km/h, metros, kilogramos","Litros en todo tipo de volumen","kW en potencia de motores","°C oficial en toda la UE","Bar en presión de neumáticos"] },
+  { flag:"✈️", region:"Aviación mundial", sys:"imp", accentVar:"--imp",
+    items:["Pies (ft) en altitud de vuelo","Nudos (kn) en velocidad","Millas náuticas en distancia","Libras en peso de equipaje","inHg en presión barométrica"] },
+  { flag:"⚕️", region:"Medicina global",  sys:"si",  accentVar:"--si",
+    items:["mg y μg en dosificación","mmHg en presión arterial","mL en líquidos y dosis","kg en peso corporal","°C en temperatura corporal"] },
+  { flag:"🛢️", region:"Industria petrolera", sys:"us", accentVar:"--us",
+    items:["Barril (bbl) = 158.99 L (global)","psi en presión de ductos","BTU en energía del crudo","°F en procesos de refinería","Galones US en refino"] },
+  { flag:"🏗️", region:"Construcción USA/UK", sys:"imp", accentVar:"--imp",
+    items:["Pies y pulgadas en planos","Libras por pie cuadrado (psf)","BTU/h en climatización","Galones en pinturas y líquidos","HP en maquinaria"] },
+];
+
+// ── MÉTODOS DE CONVERSIÓN ────────────────────────────────────────────────────
+const METHODS = {
+  factor: {
+    steps: [
+      { title:"Identifica el factor de conversión",
+        desc:"Cada par de unidades tiene un factor exacto. Ej: 1 pulgada = 2.54 cm. Ese 2.54 es el factor. Mayor→menor: multiplica. Menor→mayor: divide." },
+      { title:"Aplica la operación",
+        desc:"Multiplica o divide tu valor por el factor. Regla: unidad mayor → menor = multiplicar. Unidad menor → mayor = dividir." },
+      { title:"Verifica con las unidades",
+        desc:"Cancela las unidades como fracciones. Si el resultado tiene la unidad correcta, la conversión es válida." }
+    ],
+    terminal: [
+      { label:"Ejemplo:",   val:"5 millas → km",         cls:"" },
+      { label:"Factor:",    val:"1 mi = 1.60934 km",      cls:"blue" },
+      { label:"Operación:", val:"5 × 1.60934 = 8.047 km", cls:"amber" }
+    ]
+  },
+  proporcion: {
+    steps: [
+      { title:"Plantea la proporción",
+        desc:"Escribe la relación conocida como fracción: '1 libra / 0.4536 kg'. Luego plantea otra fracción con tu valor desconocido X." },
+      { title:"Iguala las proporciones",
+        desc:"Si 1 lb = 0.4536 kg, entonces 180 lb = X kg. Multiplica en cruz: X = 180 × 0.4536." },
+      { title:"Despeja y calcula",
+        desc:"Resuelve la multiplicación: X = 81.65 kg. Siempre verifica que las unidades sean coherentes." }
+    ],
+    terminal: [
+      { label:"Relación:", val:"1 lb / 0.4536 kg = 180 lb / X kg", cls:"" },
+      { label:"Despeje:",  val:"X = 180 × 0.4536 ÷ 1",            cls:"blue" },
+      { label:"Resultado:",val:"X = 81.65 kg",                      cls:"amber" }
+    ]
+  },
+  cadena: {
+    steps: [
+      { title:"Cuando no hay un factor directo",
+        desc:"A veces necesitas una unidad intermedia. Para km/h a m/s: convierte km a m (×1000) y horas a segundos (÷3600)." },
+      { title:"Escribe la cadena de fracciones",
+        desc:"Multiplica tu valor por cada fracción de conversión en cadena. Las unidades del numerador y denominador se cancelan." },
+      { title:"Cancela y simplifica",
+        desc:"Las unidades que aparecen arriba y abajo se eliminan. Solo queda la unidad final deseada." }
+    ],
+    terminal: [
+      { label:"Problema:",  val:"90 km/h → m/s",                      cls:"" },
+      { label:"Cadena:",    val:"90 × (1000 m/km) × (1 h/3600 s)",    cls:"blue" },
+      { label:"Cancela:",   val:"km y h se eliminan → solo m/s",       cls:"dim" },
+      { label:"Resultado:", val:"90 000 ÷ 3600 = 25 m/s",              cls:"amber" }
+    ]
+  }
+};
+
+// ── UNIDADES PARA EL CONVERTIDOR ─────────────────────────────────────────────
+const CONV_UNITS = {
+  "Longitud": [
+    { label:"metro (m)",        factor:1 },
+    { label:"kilómetro (km)",   factor:1000 },
+    { label:"centímetro (cm)",  factor:0.01 },
+    { label:"milímetro (mm)",   factor:0.001 },
+    { label:"pulgada (in)",     factor:0.0254 },
+    { label:"pie (ft)",         factor:0.3048 },
+    { label:"yarda (yd)",       factor:0.9144 },
+    { label:"milla (mi)",       factor:1609.34 },
+    { label:"milla náutica",    factor:1852 },
+  ],
+  "Masa": [
+    { label:"kilogramo (kg)",   factor:1 },
+    { label:"gramo (g)",        factor:0.001 },
+    { label:"miligramo (mg)",   factor:0.000001 },
+    { label:"tonelada (t)",     factor:1000 },
+    { label:"libra (lb)",       factor:0.453592 },
+    { label:"onza (oz)",        factor:0.0283495 },
+    { label:"stone (st)",       factor:6.35029 },
+    { label:"ton corta (US)",   factor:907.185 },
+    { label:"ton larga (UK)",   factor:1016.05 },
+  ],
+  "Temperatura": [
+    { label:"Celsius (°C)",     factor:1,   special:"C" },
+    { label:"Fahrenheit (°F)",  factor:1,   special:"F" },
+    { label:"Kelvin (K)",       factor:1,   special:"K" },
+  ],
+  "Área": [
+    { label:"metro² (m²)",      factor:1 },
+    { label:"km²",              factor:1e6 },
+    { label:"cm²",              factor:0.0001 },
+    { label:"hectárea (ha)",    factor:10000 },
+    { label:"acre",             factor:4046.86 },
+    { label:"pie² (ft²)",       factor:0.092903 },
+    { label:"pulgada² (in²)",   factor:0.00064516 },
+  ],
+  "Volumen": [
+    { label:"litro (L)",        factor:1 },
+    { label:"mililitro (mL)",   factor:0.001 },
+    { label:"m³",               factor:1000 },
+    { label:"galón UK",         factor:4.54609 },
+    { label:"galón US",         factor:3.78541 },
+    { label:"pinta UK",         factor:0.568261 },
+    { label:"pinta US",         factor:0.473176 },
+    { label:"taza US (cup)",    factor:0.236588 },
+    { label:"barril petróleo",  factor:158.987 },
+  ],
+  "Velocidad": [
+    { label:"km/h",             factor:1 },
+    { label:"m/s",              factor:3.6 },
+    { label:"mph",              factor:1.60934 },
+    { label:"nudo (kn)",        factor:1.852 },
+    { label:"pie/s (ft/s)",     factor:1.09728 },
+  ],
+  "Presión": [
+    { label:"pascal (Pa)",      factor:1 },
+    { label:"kilopascal (kPa)", factor:1000 },
+    { label:"bar",              factor:100000 },
+    { label:"atm",              factor:101325 },
+    { label:"psi",              factor:6894.76 },
+    { label:"mmHg",             factor:133.322 },
+  ],
+  "Tiempo": [
+    { label:"segundo (s)",      factor:1 },
+    { label:"milisegundo (ms)", factor:0.001 },
+    { label:"minuto (min)",     factor:60 },
+    { label:"hora (h)",         factor:3600 },
+    { label:"día (d)",          factor:86400 },
+    { label:"semana",           factor:604800 },
+    { label:"año",              factor:31557600 },
+  ],
+};
+
+// ── TABLA DE CONVERSIONES ────────────────────────────────────────────────────
+// [nombre, de, a, fórmula, sistema, categoría, nota]
+const CONV_DATA = [
+  ["km → m","km","m","× 1 000","SI","Longitud",""],
+  ["m → cm","m","cm","× 100","SI","Longitud",""],
+  ["m → mm","m","mm","× 1 000","SI","Longitud",""],
+  ["cm → mm","cm","mm","× 10","SI","Longitud",""],
+  ["m → km","m","km","÷ 1 000","SI","Longitud",""],
+  ["milla → km","mi","km","× 1.60934","SI-IMP","Longitud","Milla terrestre"],
+  ["km → milla","km","mi","÷ 1.60934","SI-IMP","Longitud",""],
+  ["pulgada → cm","in","cm","× 2.54","SI-IMP","Longitud","Exacto por definición"],
+  ["cm → pulgada","cm","in","÷ 2.54","SI-IMP","Longitud",""],
+  ["pie → m","ft","m","× 0.3048","SI-IMP","Longitud",""],
+  ["m → pie","m","ft","× 3.28084","SI-IMP","Longitud",""],
+  ["yarda → m","yd","m","× 0.9144","SI-IMP","Longitud",""],
+  ["milla náutica → km","nmi","km","× 1.852","SI-IMP","Longitud","Igual en UK y US"],
+  ["furlong → m","fur","m","× 201.168","IMP","Longitud","Solo Imperial UK"],
+  ["pie → pulgada","ft","in","× 12","IMP","Longitud","Interna imperial"],
+  ["yarda → pie","yd","ft","× 3","IMP","Longitud","Interna imperial"],
+  ["milla → yarda","mi","yd","× 1 760","IMP","Longitud","Interna imperial"],
+  ["pulgada → mm","in","mm","× 25.4","SI-IMP","Longitud",""],
+  ["pie → cm","ft","cm","× 30.48","SI-IMP","Longitud",""],
+  ["kg → g","kg","g","× 1 000","SI","Masa",""],
+  ["g → mg","g","mg","× 1 000","SI","Masa",""],
+  ["t → kg","t","kg","× 1 000","SI","Masa","Tonelada métrica"],
+  ["libra → kg","lb","kg","× 0.453592","SI-IMP","Masa","Igual en UK y US"],
+  ["kg → libra","kg","lb","× 2.20462","SI-IMP","Masa",""],
+  ["onza → g","oz","g","× 28.3495","SI-IMP","Masa","Onza avoirdupois"],
+  ["g → onza","g","oz","÷ 28.3495","SI-IMP","Masa",""],
+  ["stone → kg","st","kg","× 6.35029","IMP","Masa","Solo Imperial UK"],
+  ["stone → libra","st","lb","× 14","IMP","Masa","Interna imperial"],
+  ["libra → onza","lb","oz","× 16","IMP","Masa","Interna imperial"],
+  ["ton corta → kg","ton","kg","× 907.185","US","Masa","Ton US = 2 000 lb"],
+  ["ton larga → kg","LT","kg","× 1 016.05","IMP","Masa","Ton UK = 2 240 lb"],
+  ["onza troy → g","oz t","g","× 31.1035","IMP","Masa","Metales preciosos"],
+  ["quintal → kg","q","kg","× 100","SI","Masa",""],
+  ["°C → °F","°C","°F","(× 9/5) + 32","SI-IMP","Temperatura",""],
+  ["°F → °C","°F","°C","(- 32) × 5/9","SI-IMP","Temperatura",""],
+  ["°C → K","°C","K","+ 273.15","SI","Temperatura",""],
+  ["K → °C","K","°C","- 273.15","SI","Temperatura",""],
+  ["°F → K","°F","K","(°F-32)×5/9 + 273.15","SI-IMP","Temperatura",""],
+  ["°C → Rankine","°C","°R","(°C+273.15)×9/5","SI-US","Temperatura",""],
+  ["°F → Rankine","°F","°R","°F + 459.67","US","Temperatura","Rankine = base US"],
+  ["m² → cm²","m²","cm²","× 10 000","SI","Área",""],
+  ["km² → m²","km²","m²","× 1 000 000","SI","Área",""],
+  ["ha → m²","ha","m²","× 10 000","SI","Área",""],
+  ["km² → ha","km²","ha","× 100","SI","Área",""],
+  ["acre → m²","ac","m²","× 4 046.86","SI-IMP","Área","Igual en UK y US"],
+  ["acre → ha","ac","ha","× 0.404686","SI-IMP","Área",""],
+  ["ha → acre","ha","ac","× 2.47105","SI-IMP","Área",""],
+  ["milla² → km²","mi²","km²","× 2.58999","SI-IMP","Área",""],
+  ["pie² → m²","ft²","m²","× 0.092903","SI-IMP","Área",""],
+  ["pulgada² → cm²","in²","cm²","× 6.4516","SI-IMP","Área",""],
+  ["m³ → L","m³","L","× 1 000","SI","Volumen",""],
+  ["L → mL","L","mL","× 1 000","SI","Volumen",""],
+  ["galón UK → L","gal UK","L","× 4.54609","SI-IMP","Volumen","Imperial gallon"],
+  ["galón US → L","gal US","L","× 3.78541","SI-US","Volumen","US liquid gallon"],
+  ["galón UK → galón US","gal UK","gal US","× 1.20095","IMP-US","Volumen","Diferencia clave"],
+  ["galón US → galón UK","gal US","gal UK","÷ 1.20095","IMP-US","Volumen",""],
+  ["pinta UK → L","pt UK","L","× 0.568261","SI-IMP","Volumen",""],
+  ["pinta US → L","pt US","L","× 0.473176","SI-US","Volumen",""],
+  ["pinta UK → pinta US","pt UK","pt US","× 1.20095","IMP-US","Volumen",""],
+  ["oz fluida UK → mL","fl oz UK","mL","× 28.4131","SI-IMP","Volumen",""],
+  ["oz fluida US → mL","fl oz US","mL","× 29.5735","SI-US","Volumen",""],
+  ["taza US → mL","cup US","mL","× 236.588","SI-US","Volumen","Cocina US"],
+  ["pie³ → L","ft³","L","× 28.3168","SI-IMP","Volumen",""],
+  ["barril petróleo → L","bbl","L","× 158.987","US","Volumen","Oil barrel US"],
+  ["barril UK → L","bbl UK","L","× 163.659","IMP","Volumen","Imperial barrel"],
+  ["m/s → km/h","m/s","km/h","× 3.6","SI","Velocidad",""],
+  ["km/h → m/s","km/h","m/s","÷ 3.6","SI","Velocidad",""],
+  ["km/h → mph","km/h","mph","÷ 1.60934","SI-IMP","Velocidad",""],
+  ["mph → km/h","mph","km/h","× 1.60934","SI-IMP","Velocidad",""],
+  ["nudo → km/h","kn","km/h","× 1.852","SI-IMP","Velocidad",""],
+  ["pie/s → m/s","ft/s","m/s","× 0.3048","SI-IMP","Velocidad",""],
+  ["Mach → km/h","Ma","km/h","× 1 234.8","SI","Velocidad","A 20°C"],
+  ["Pa → kPa","Pa","kPa","÷ 1 000","SI","Presión",""],
+  ["bar → Pa","bar","Pa","× 100 000","SI","Presión",""],
+  ["atm → Pa","atm","Pa","× 101 325","SI","Presión",""],
+  ["psi → kPa","psi","kPa","× 6.89476","SI-IMP","Presión","psi = lb/in²"],
+  ["psi → bar","psi","bar","× 0.0689476","SI-IMP","Presión",""],
+  ["kPa → psi","kPa","psi","÷ 6.89476","SI-IMP","Presión",""],
+  ["mmHg → Pa","mmHg","Pa","× 133.322","SI","Presión","Torr ≈ mmHg"],
+  ["inHg → kPa","inHg","kPa","× 3.38639","SI-IMP","Presión","Meteorología"],
+  ["J → cal","J","cal","÷ 4.184","SI","Energía",""],
+  ["cal → J","cal","J","× 4.184","SI","Energía",""],
+  ["kcal → J","kcal","J","× 4 184","SI","Energía","1 kcal = 1 Cal alimentaria"],
+  ["kWh → J","kWh","J","× 3 600 000","SI","Energía",""],
+  ["BTU → J","BTU","J","× 1 055.06","SI-IMP","Energía","British Thermal Unit"],
+  ["BTU → kcal","BTU","kcal","× 0.251996","SI-IMP","Energía",""],
+  ["kWh → BTU","kWh","BTU","× 3 412.14","SI-IMP","Energía",""],
+  ["W → kW","W","kW","÷ 1 000","SI","Potencia",""],
+  ["HP → W","hp","W","× 745.7","SI-IMP","Potencia","HP mecánico"],
+  ["kW → HP","kW","hp","× 1.34102","SI-IMP","Potencia",""],
+  ["CV → kW","CV","kW","× 0.7355","SI-IMP","Potencia","Caballo de vapor"],
+  ["BTU/h → W","BTU/h","W","× 0.293071","SI-IMP","Potencia","Climatización"],
+  ["s → ms","s","ms","× 1 000","SI","Tiempo",""],
+  ["min → s","min","s","× 60","SI","Tiempo",""],
+  ["h → s","h","s","× 3 600","SI","Tiempo",""],
+  ["h → min","h","min","× 60","SI","Tiempo",""],
+  ["d → h","d","h","× 24","SI","Tiempo",""],
+  ["semana → d","sem","d","× 7","SI","Tiempo",""],
+  ["año → d","año","d","× 365.25","SI","Tiempo","Año juliano"],
+  ["B → bit","B","bit","× 8","SI","Datos",""],
+  ["kB → B","kB","B","× 1 024","SI","Datos",""],
+  ["MB → kB","MB","kB","× 1 024","SI","Datos",""],
+  ["GB → MB","GB","MB","× 1 024","SI","Datos",""],
+  ["TB → GB","TB","GB","× 1 024","SI","Datos",""],
+  ["MB → Mbit","MB","Mbit","× 8","SI","Datos",""],
+];
+
+const SYS_LABELS = {
+  "SI":"SI (métrico)", "IMP":"Imperial UK", "US":"EE.UU.",
+  "SI-IMP":"SI ↔ Imperial", "SI-US":"SI ↔ US", "IMP-US":"Imperial ↔ US"
+};
+
+// ── EJEMPLOS DIDÁCTICOS ──────────────────────────────────────────────────────
+const EXAMPLES = {
+  basico: [
+    { cat:"Longitud", title:"5 km a metros",
+      context:"Quieres saber cuántos metros hay en 5 km para una carrera.",
+      steps:[["Fórmula","km × 1 000 = m"],["Sustituye","5 × 1 000"],["Resultado","= 5 000 m"]],
+      result:"5 km = 5 000 m",
+      tip:"De mayor a menor siempre multiplicas. km → m multiplica por 1 000." },
+    { cat:"Masa", title:"3 kg a gramos",
+      context:"Una receta pide 3 kg de harina pero la balanza mide en gramos.",
+      steps:[["Fórmula","kg × 1 000 = g"],["Sustituye","3 × 1 000"],["Resultado","= 3 000 g"]],
+      result:"3 kg = 3 000 g",
+      tip:"kg a g siempre multiplica por 1 000. Esencial en cocina." },
+    { cat:"Temperatura", title:"100 °C a Fahrenheit",
+      context:"El agua hierve a 100 °C. ¿Cuánto es en Fahrenheit?",
+      steps:[["Fórmula","°F = (°C × 9/5) + 32"],["Multiplica","100 × 9/5 = 180"],["Suma 32","180 + 32 = 212 °F"]],
+      result:"100 °C = 212 °F",
+      tip:"El punto de ebullición es exactamente 212 °F — fácil de recordar." },
+    { cat:"Tiempo", title:"2 horas a minutos",
+      context:"Una película dura 2 horas. ¿Cuántos minutos son?",
+      steps:[["Fórmula","h × 60 = min"],["Sustituye","2 × 60"],["Resultado","= 120 min"]],
+      result:"2 h = 120 min",
+      tip:"1 hora = 60 min. 1 día = 1 440 min." },
+  ],
+  medio: [
+    { cat:"Longitud", title:"1.5 millas a km",
+      context:"Una señal en EE.UU. dice '1.5 miles'. ¿Cuántos km son?",
+      steps:[["Fórmula","mi × 1.60934 = km"],["Sustituye","1.5 × 1.60934"],["Calcula","= 2.414 km"],["Redondea","≈ 2.41 km"]],
+      result:"1.5 mi ≈ 2.41 km",
+      tip:"Truco rápido: millas × 1.6 para estimación precisa." },
+    { cat:"Masa", title:"180 libras a kg",
+      context:"Un amigo pesa 180 lb. ¿Cuántos kg son?",
+      steps:[["Fórmula","lb × 0.453592 = kg"],["Sustituye","180 × 0.453592"],["Calcula","= 81.65 kg"]],
+      result:"180 lb ≈ 81.6 kg",
+      tip:"Truco: divide libras entre 2.2. Ej: 180 ÷ 2.2 ≈ 81.8 kg." },
+    { cat:"Temperatura", title:"350 °F a °C (horno)",
+      context:"Una receta dice hornear a 350 °F. ¿A cuántos °C?",
+      steps:[["Fórmula","°C = (°F - 32) × 5/9"],["Resta 32","350 - 32 = 318"],["× 5/9","318 × 5 ÷ 9 = 176.7 °C"]],
+      result:"350 °F ≈ 177 °C",
+      tip:"175 °C es la referencia práctica más cercana en hornos domésticos." },
+    { cat:"Volumen", title:"Galón UK vs galón US",
+      context:"El galón no es igual en UK y EE.UU. ¿Cuánto difieren?",
+      steps:[["Galón UK → L","1 × 4.54609 = 4.546 L"],["Galón US → L","1 × 3.78541 = 3.785 L"],["Diferencia","4.546 - 3.785 = 0.761 L"]],
+      result:"1 gal UK = 1.201 gal US",
+      tip:"El galón UK es ~20% mayor. Crítico en recetas y combustible." },
+    { cat:"Velocidad", title:"90 km/h a m/s",
+      context:"Un auto va a 90 km/h. ¿Cuántos metros por segundo?",
+      steps:[["Fórmula","m/s = km/h ÷ 3.6"],["Sustituye","90 ÷ 3.6"],["Resultado","= 25 m/s"]],
+      result:"90 km/h = 25 m/s",
+      tip:"÷ 3.6 convierte siempre km/h a m/s. Factor clave en física." },
+  ],
+  avanzado: [
+    { cat:"Energía", title:"250 kcal a Joules",
+      context:"Un alimento tiene 250 kcal. ¿Cuántos Joules contiene?",
+      steps:[["1 kcal = 1 000 cal","250 kcal = 250 000 cal"],["Fórmula","cal × 4.184 = J"],["Aplica","250 000 × 4.184 = 1 046 000 J"],["A kJ","÷ 1 000 = 1 046 kJ"]],
+      result:"250 kcal = 1 046 kJ",
+      tip:"En etiquetas europeas verás kcal y kJ juntos. 1 kcal = 4.184 kJ." },
+    { cat:"Presión", title:"32 psi a bar y kPa",
+      context:"Manual de auto pide 32 psi en llantas. Expresarlo en bar y kPa.",
+      steps:[["psi → bar","32 × 0.0689476 = 2.206 bar"],["psi → kPa","32 × 6.89476 = 220.6 kPa"],["Resumen","32 psi = 2.21 bar = 220.6 kPa"]],
+      result:"32 psi = 2.21 bar = 220.6 kPa",
+      tip:"Europa usa bar; Latinoamérica usa kPa. Saber ambas evita errores." },
+    { cat:"Velocidad", title:"Mach 2 a km/h y m/s",
+      context:"Un avión supera Mach 2. ¿Cuánto es en km/h y m/s?",
+      steps:[["Mach 1 = 343 m/s","Mach 2 = 2 × 343 = 686 m/s"],["m/s → km/h","686 × 3.6 = 2 469.6 km/h"],["Verificación","Mach 2 × 1 234.8 = 2 469.6 km/h ✓"]],
+      result:"Mach 2 = 686 m/s = 2 469.6 km/h",
+      tip:"A 10 000 m de altitud Mach 1 ≈ 295 m/s. Varía con la temperatura." },
+    { cat:"Temperatura", title:"-40 °C = -40 °F",
+      context:"El único punto donde Celsius y Fahrenheit coinciden exactamente.",
+      steps:[["Verifica","(-40 × 9/5) + 32 = -72 + 32 = -40 °F ✓"],["°C → K","-40 + 273.15 = 233.15 K"],["°F → K","(-40-32)×5/9+273.15 = 233.15 K ✓"]],
+      result:"-40 °C = -40 °F = 233.15 K",
+      tip:"Es el único cruce de las escalas. Úsalo para verificar fórmulas." },
+    { cat:"Potencia", title:"150 HP a kW y W",
+      context:"Motor de 150 HP. Conversión completa al sistema SI.",
+      steps:[["HP → kW","150 × 0.7457 = 111.86 kW"],["kW → W","111.86 × 1 000 = 111 860 W"],["Redondea","≈ 111.9 kW"]],
+      result:"150 HP ≈ 111.9 kW = 111 900 W",
+      tip:"Europa usa kW; EE.UU. usa HP. Divide HP entre 1.341 para invertir." },
+  ]
+};
+
+mobile-nav.js
+/* ═══════════════════════════════════════════════════════════════════
+   UNITVERSE — mobile-nav.js  v4
+   5 botones directos en el nav. Sin drawer.
+   Breakpoint unificado: 768px
+   Cargar DESPUÉS de app.js y activities.js
+═══════════════════════════════════════════════════════════════════ */
+(function () {
+  'use strict';
+
+  const MOBILE_BP = 768;
+  function isMobileNow() { return window.innerWidth <= MOBILE_BP; }
+
+  const nav = document.getElementById('mobile-nav');
+  if (!nav) return;
+
+  /* ── Actualizar botón activo ──────────────────────────────────── */
+  function setActive(panelId) {
+    nav.querySelectorAll('.mn-btn[data-panel]').forEach(btn => {
+      const isActive = btn.dataset.panel === panelId;
+      btn.classList.toggle('mn-active', isActive);
+    });
+  }
+
+  /* ── Navegar ──────────────────────────────────────────────────── */
+  function goPanel(panelId) {
+    if (typeof openPanel === 'function') openPanel(panelId);
+    setActive(panelId);
+  }
+
+  /* ── Bind eventos (solo una vez) ─────────────────────────────── */
+  let eventsBound = false;
+  function bindEvents() {
+    if (eventsBound) return;
+    eventsBound = true;
+
+    nav.querySelectorAll('.mn-btn[data-panel]').forEach(btn => {
+      btn.addEventListener('click', () => goPanel(btn.dataset.panel));
+    });
+
+    /* Interceptar openPanel global para mantener estado activo */
+    const _orig = window.openPanel;
+    window.openPanel = function (panelId) {
+      if (_orig) _orig(panelId);
+      if (isMobileNow()) setActive(panelId);
+    };
+  }
+
+  /* ── Mostrar/ocultar nav según tamaño ────────────────────────── */
+  function applyMode() {
+    if (isMobileNow()) {
+      nav.style.display = 'flex';
+      bindEvents();
+      const current = (typeof currentPanel !== 'undefined') ? currentPanel : 'home';
+      setActive(current);
+    } else {
+      nav.style.display = 'none';
+    }
+  }
+
+  /* ── Init ─────────────────────────────────────────────────────── */
+  applyMode();
+  setActive('home');
+
+  /* ── Resize ───────────────────────────────────────────────────── */
+  let resizeTimer;
+  window.addEventListener('resize', () => {
+    clearTimeout(resizeTimer);
+    resizeTimer = setTimeout(applyMode, 120);
+  });
+
+})();
+
+manifest.json
+{
+  "name": "UnitVerse — Conversión de Unidades",
+  "short_name": "UnitVerse",
+  "description": "Convierte cualquier unidad del mundo. Sistema Internacional, Imperial y EE.UU.",
+  "start_url": "./index.html",
+  "display": "standalone",
+  "background_color": "#060b14",
+  "theme_color": "#00e5b0",
+  "orientation": "portrait-primary",
+  "lang": "es",
+  "icons": [
+    {
+      "src": "icons/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "icons/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ],
+  "categories": ["education", "utilities"],
+  "screenshots": [],
+  "shortcuts": [
+    {
+      "name": "Convertidor",
+      "short_name": "Convertir",
+      "description": "Ir directo al convertidor",
+      "url": "./index.html#convertidor"
+    },
+    {
+      "name": "Tabla de conversiones",
+      "short_name": "Tabla",
+      "description": "Ver tabla completa",
+      "url": "./index.html#tabla"
+    }
+  ]
+}
+
+mobile.css
+/* ═══════════════════════════════════════════════════════
+   UNITVERSE — mobile.css  (complemento mínimo)
+   Solo agrega el overlay y drawer de secciones extra.
+   Todo el responsive principal está en style.css.
+═══════════════════════════════════════════════════════ */
+
+/* Drawer + overlay para desktop y mobile */
+#mn-overlay {
+  display: none;
+  position: fixed; inset: 0;
+  background: rgba(3, 6, 14, .65);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  z-index: 195;
+}
+#mn-overlay.open { display: block; }
+
+#mn-drawer {
+  display: block;
+  position: fixed;
+  bottom: 82px;
+  left: 50%;
+  transform: translate(-50%, 120%);
+  width: min(94vw, 520px);
+  max-height: 62vh;
+  background: rgba(10, 18, 36, .88);
+  border: 1px solid rgba(32, 247, 220, .30);
+  border-radius: 20px;
+  padding: 14px;
+  z-index: 196;
+  box-shadow: 0 0 30px rgba(32, 247, 220, .35);
+  backdrop-filter: blur(14px);
+  transition: transform .35s cubic-bezier(.32, 1.2, .64, 1), opacity .28s ease;
+  overflow: hidden;
+  opacity: 0;
+}
+#mn-drawer.open { transform: translate(-50%, 0); opacity: 1; }
+
+.mn-drawer-handle {
+  width: 42px; height: 4px;
+  background: rgba(32, 247, 220, .32);
+  border-radius: 2px; margin: 0 auto 12px;
+}
+
+@media (min-width: 768px) {
+  #mn-drawer { bottom: 82px; width: 340px; left: auto; right: 20px; transform: translateX(0) translateY(115%); }
+  #mn-drawer.open { transform: translateX(0) translateY(0); }
+  #mn-overlay { background: rgba(3, 6, 14, .65); }
+}
+
+@media (max-width: 768px) {
+
+  /* Overlay del drawer */
+  #mn-overlay {
+    display: none;
+    position: fixed; inset: 0;
+    background: rgba(3, 6, 14, .75);
+    backdrop-filter: blur(6px);
+    -webkit-backdrop-filter: blur(6px);
+    z-index: 195;
+  }
+  #mn-overlay.open { display: block; }
+
+  /* Drawer de secciones adicionales */
+  #mn-drawer {
+    position: fixed;
+    bottom: calc(72px + env(safe-area-inset-bottom));
+    left: 0; right: 0;
+    background: #0a1120;
+    border: 1px solid rgba(0, 200, 255, .2);
+    border-bottom: none;
+    border-radius: 20px 20px 0 0;
+    padding: 16px 16px calc(20px + env(safe-area-inset-bottom));
+    z-index: 196;
+    transform: translateY(100%);
+    transition: transform .35s cubic-bezier(.32, 1.2, .64, 1);
+  }
+  #mn-drawer.open { transform: translateY(0); }
+
+  .mn-drawer-handle {
+    width: 38px; height: 4px;
+    background: rgba(0, 200, 255, .22);
+    border-radius: 2px; margin: 0 auto 14px;
+  }
+  .mn-drawer-eyebrow {
+    font-family: var(--font-m); font-size: 9px;
+    letter-spacing: .16em; color: var(--si);
+    margin-bottom: 12px; text-align: center;
+  }
+  .mn-drawer-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 10px;
+  }
+  .mn-drawer-item {
+    display: flex; flex-direction: column;
+    align-items: center; gap: 6px; padding: 14px 8px;
+    background: rgba(255,255,255,.03);
+    border: 1px solid rgba(0,200,255,.1);
+    border-radius: 12px; cursor: pointer;
+    -webkit-tap-highlight-color: transparent;
+    touch-action: manipulation;
+    transition: border-color .18s ease, background .18s ease, transform .18s ease;
+  }
+  .mn-drawer-item:active { transform: scale(.93); }
+  .mn-drawer-item:hover  { border-color: rgba(32,247,220,.8); background: rgba(32,247,220,.14); }
+  .mn-drawer-ico { font-size: 26px; line-height: 1; }
+  .mn-drawer-txt {
+    font-family: var(--font-m); font-size: 9px;
+    letter-spacing: .06em; color: var(--text-dim);
+    text-align: center; text-transform: uppercase;
+  }
+
+  /* Bottom nav ciberpunk */
+  #mobile-nav {
+    position: fixed;
+    inset: auto 12px 12px;
+    left: 50%; transform: translateX(-50%);
+    z-index: 300;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    min-width: min(96vw, 520px);
+    max-width: 560px;
+    padding: 10px 10px 12px;
+    background: rgba(10, 20, 42, .78);
+    border: 1px solid rgba(32, 247, 220, .35);
+    border-radius: 24px;
+    backdrop-filter: blur(18px);
+    box-shadow: 0 0 20px rgba(32,247,220,.45);
+  }
+  .mn-btn {
+    border: none;
+    background: transparent;
+    color: #c9d1e3;
+    font: 500 11px var(--font-m);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 4px;
+    padding: 8px 10px;
+    border-radius: 18px;
+    width: 68px;
+    cursor: pointer;
+    transition: transform .2s ease, color .2s ease, background .2s ease;
+    -webkit-tap-highlight-color: transparent;
+  }
+  .mn-btn:hover { transform: translateY(-2px); background: rgba(20, 130, 255, .16); color: #fff; }
+  .mn-btn.active, .mn-btn.mn-active { color: #20f7dc; box-shadow: 0 0 16px rgba(32,247,220,.8), 0 0 24px rgba(74,116,255,.5); background: rgba(22, 120, 184, .20); border: 1px solid rgba(32,247,220,.85); }
+  .mn-ico { font-size: 21px; display: block; }
+  .mn-txt { font-size: 10px; }
+}
+
+service-worker.js
+/* ═══════════════════════════════════════════════════════
+   UNITVERSE — service-worker.js
+   Estrategia: Cache First para assets locales + Network First para fuentes
+═══════════════════════════════════════════════════════ */
+
+const CACHE_NAME = 'unitverse-v1';
+const OFFLINE_URL = './index.html';
+
+// Todos los archivos del proyecto que se cachean al instalar
+const ASSETS_TO_CACHE = [
+  './index.html',
+  './style.css',
+  './activities.css',
+  './app.js',
+  './data.js',
+  './activities.js',
+  './favicon.svg',
+  './manifest.json'
+];
+
+// ── INSTALL: precachear todos los assets locales ──────
+self.addEventListener('install', event => {
+  event.waitUntil(
+    caches.open(CACHE_NAME).then(cache => {
+      return cache.addAll(ASSETS_TO_CACHE);
+    }).then(() => {
+      // Activar inmediatamente sin esperar que se cierre la pestaña anterior
+      return self.skipWaiting();
+    })
+  );
+});
+
+// ── ACTIVATE: limpiar caches viejos ──────────────────
+self.addEventListener('activate', event => {
+  event.waitUntil(
+    caches.keys().then(cacheNames => {
+      return Promise.all(
+        cacheNames
+          .filter(name => name !== CACHE_NAME)
+          .map(name => caches.delete(name))
+      );
+    }).then(() => {
+      // Tomar control de todas las pestañas abiertas de inmediato
+      return self.clients.claim();
+    })
+  );
+});
+
+// ── FETCH: Cache First para archivos locales, Network First para externos ──
+self.addEventListener('fetch', event => {
+  const { request } = event;
+  const url = new URL(request.url);
+
+  // Solo manejar peticiones GET
+  if (request.method !== 'GET') return;
+
+  // Para fuentes de Google Fonts y recursos externos: Network First con fallback
+  if (url.hostname === 'fonts.googleapis.com' || url.hostname === 'fonts.gstatic.com') {
+    event.respondWith(
+      caches.open(CACHE_NAME).then(cache =>
+        fetch(request)
+          .then(response => {
+            // Cachear la fuente descargada
+            if (response.ok) cache.put(request, response.clone());
+            return response;
+          })
+          .catch(() => cache.match(request))
+      )
+    );
+    return;
+  }
+
+  // Para archivos locales del proyecto: Cache First
+  if (url.origin === location.origin || request.url.startsWith('./')) {
+    event.respondWith(
+      caches.match(request).then(cached => {
+        if (cached) return cached;
+
+        // No está en cache — intentar red y guardar
+        return fetch(request).then(response => {
+          if (response.ok) {
+            const clone = response.clone();
+            caches.open(CACHE_NAME).then(cache => cache.put(request, clone));
+          }
+          return response;
+        }).catch(() => {
+          // Sin red y sin cache — devolver la página principal como fallback
+          if (request.destination === 'document') {
+            return caches.match(OFFLINE_URL);
+          }
+        });
+      })
+    );
+  }
+});
+
+style.css
+/* ═══════════════════════════════════════════════════════
+   UNITVERSE — style.css  v6 (móvil corregido al boceto)
+═══════════════════════════════════════════════════════ */
+:root {
+  --bg:          #0b0f1a;
+  --bg2:         #12182a;
+  --bg3:         #1b2a4f;
+  --panel:       rgba(19, 35, 62, 0.78);
+  --panel-border: rgba(62, 100, 188, 0.32);
+  --border:      rgba(32, 190, 250, .18);
+  --border2:     rgba(47, 119, 214, .32);
+  --bg-gradient: radial-gradient(circle at 40% 0%, #0a2f6f 0%, #0b1032 45%, #050615 100%);
+
+  --si:      #20f7dc; --si-dim: rgba(32,247,220,.15); --si-glow: rgba(32,247,220,.5);
+  --imp:     #4a74ff; --imp-dim: rgba(74,116,255,.14); --imp-glow: rgba(74,116,255,.45);
+  --us:      #f2b15e; --us-dim: rgba(242,177,94,.14); --us-glow: rgba(242,177,94,.45);
+  --cross:   #b173e0; --cross-dim: rgba(177,115,224,.14);
+  --text:    #c9d1e3; --text-dim: #7a859f; --white: #fff;
+  --sidebar-w: 102px;
+  --font-t: 'Orbitron', monospace;
+  --font-b: 'Exo 2', sans-serif;
+  --font-m: 'Share Tech Mono', monospace;
+  --r: 14px; --rlg: 20px; --tr: .25s ease;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+
+/* ── FIX CRÍTICO: sin overflow:hidden en el root ── */
+html,body { height: 100%; }
+body {
+  font-family: var(--font-b);
+  background-color: var(--bg);
+  background-image:
+    radial-gradient(circle at 15% 12%, rgba(32,247,220,0.12) 0%, transparent 35%),
+    radial-gradient(circle at 80% 22%, rgba(74,116,255,0.15) 0%, transparent 30%),
+    linear-gradient(140deg, rgba(11,15,26,0.85), rgba(8,10,18,0.98)),
+    var(--bg-gradient);
+  color: var(--text);
+  display: flex;
+  min-height: 100vh;
+  overflow-x: hidden;
+  text-shadow: 0 1px 2px rgba(0,0,0,.45);
+  position: relative;
+}
+
+body::before {
+  content: '';
+  position: absolute; inset: 0;
+  background: radial-gradient(circle at 50% 70%, rgba(32,247,220,.08) 0%, rgba(74,116,255,.06) 14%, transparent 40%);
+  pointer-events: none;
+  z-index: 1;
+}
+
+#particles-canvas { position: fixed; inset: 0; pointer-events: none; z-index: 0; opacity: .35; }
+#particles-canvas::after {
+  content: '';
+  position: absolute; inset: 0;
+  background-image: radial-gradient(circle, rgba(255,255,255,.12) 1px, transparent 1px);
+  background-size: 90px 90px;
+  opacity: .55;
+}
+
+/* ══════════════════════════════════════════════════════
+   SIDEBAR
+══════════════════════════════════════════════════════ */
+#sidebar {
+  position: fixed; left:0; top:0; bottom:0; width: var(--sidebar-w);
+  background: linear-gradient(180deg, rgba(6,10,18,.92), rgba(8,14,24,.7));
+  border-right: 1px solid rgba(16,92,210,.38);
+  box-shadow: 2px 0 20px rgba(0,0,0,.55);
+  backdrop-filter: blur(22px);
+  z-index: 100;
+  display: flex; flex-direction: column; align-items: center;
+  justify-content: space-between; padding: 20px 0 24px;
+}
+
+#sidebar, .panel { border-radius: 24px; }
+
+.sb-logo-name { font-family: var(--font-t); font-size: 9px; font-weight: 900; letter-spacing: .18em; color: #8ac2e4; }
+.sb-home-btn { width: 66px; height: 66px; background: rgba(3,14,28,.45); border: 1.5px solid rgba(32,247,220,.8); box-shadow: 0 0 28px rgba(32,247,220,.6); }
+.sb-home-btn span { font-size: 8.8px; color: #20f7dc; }
+.sb-home-btn:hover { transform: translateY(-2px) scale(1.05); }
+
+.sb-logo { display: flex; flex-direction: column; align-items: center; gap: 6px; width: 100%; justify-content: center; padding: 0 8px; cursor: pointer; transition: opacity var(--tr); }
+.sb-logo:hover { opacity: .75; }
+.sb-logo svg { flex-shrink: 0; }
+.sb-logo-name { font-family: var(--font-t); font-size: 8px; font-weight: 900; letter-spacing: .18em; color: var(--text-dim); white-space: nowrap; }
+.sb-logo-name span { color: var(--si); }
+.sb-spacer { flex: 1; }
+.sb-home-btn { width: 60px; height: 60px; background: var(--si-dim); border: 1.5px solid var(--si); border-radius: 16px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 5px; cursor: pointer; transition: all var(--tr); box-shadow: 0 0 14px var(--si-glow); position: relative; }
+.sb-home-btn:hover { transform: scale(1.08); box-shadow: 0 0 24px var(--si-glow); background: rgba(0,229,176,.22); }
+.sb-home-btn svg { flex-shrink: 0; }
+.sb-home-btn span { font-family: var(--font-m); font-size: 8px; font-weight: 700; letter-spacing: .08em; color: var(--si); text-transform: uppercase; }
+.sb-home-btn::after { content: 'INICIO'; position: absolute; left: calc(100% + 10px); top: 50%; transform: translateY(-50%); background: var(--panel); border: 1px solid var(--si); color: var(--si); font-family: var(--font-m); font-size: 10px; font-weight: 700; letter-spacing: .1em; padding: 5px 10px; border-radius: 6px; white-space: nowrap; opacity: 0; pointer-events: none; transition: opacity .15s ease; z-index: 200; }
+.sb-home-btn:hover::after { opacity: 1; }
+
+.sb-more-btn {
+  width: 60px; height: 60px; background: rgba(74,116,255,.18); border: 1.5px solid rgba(74,116,255,.9); border-radius: 16px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 5px; cursor: pointer; transition: all var(--tr); box-shadow: 0 0 20px rgba(74,116,255,.45); position: relative;
+}
+.sb-more-btn:hover { transform: scale(1.08); box-shadow: 0 0 32px rgba(74,116,255,.75); background: rgba(74,116,255,.28); }
+.sb-more-btn span { font-family: var(--font-m); font-size: 8px; font-weight: 700; letter-spacing: .08em; color: #74b5ff; text-transform: uppercase; }
+.sb-grid { display: none; }
+
+/* ══════════════════════════════════════════════════════
+   MAIN AREA — valores correctos para escritorio
+══════════════════════════════════════════════════════ */
+#main-area {
+  margin-left: var(--sidebar-w);
+  height: 100%;
+  overflow: hidden;
+  position: relative;
+  flex: 1;
+}
+
+#breadcrumb { position: absolute; top: 16px; left: 24px; display: flex; align-items: center; gap: 8px; font-family: var(--font-m); font-size: 11px; color: var(--text-dim); z-index: 10; }
+.bc-logo { color: var(--si); font-weight: 700; }
+.bc-sep  { color: var(--border2); }
+#bc-current { color: var(--text); }
+
+/* ══════════════════════════════════════════════════════
+   PANELS
+══════════════════════════════════════════════════════ */
+.panel { position: absolute; inset: 0; padding: 64px 40px 32px; overflow-y: auto; opacity: 0; transform: translateY(18px) scale(.98); pointer-events: none; transition: opacity .32s ease, transform .32s ease; z-index: 1;
+  background: var(--panel);
+  border: 1px solid var(--panel-border);
+  box-shadow: 0 0 32px rgba(0,0,0,.35);
+  backdrop-filter: blur(14px);
+  border-radius: var(--rlg);
+}
+.panel.active { opacity: 1; transform: none; pointer-events: all; z-index: 2; }
+.panel.exit { opacity: 0; transform: translateY(-14px) scale(.98); pointer-events: none; }
+.panel-header { margin-bottom: 32px; max-width: 700px; }
+.panel::-webkit-scrollbar { width: 5px; }
+.panel::-webkit-scrollbar-track { background: transparent; }
+.panel::-webkit-scrollbar-thumb { background: var(--border2); border-radius: 4px; }
+
+/* ══════════════════════════════════════════════════════
+   PANEL HOME
+══════════════════════════════════════════════════════ */
+#panel-home { display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; overflow: hidden; padding: 0 48px; }
+.home-bg-grid { position: absolute; inset: 0; z-index: 0; pointer-events: none; background-image: linear-gradient(rgba(0,229,176,.03) 1px, transparent 1px), linear-gradient(90deg, rgba(0,229,176,.03) 1px, transparent 1px); background-size: 48px 48px; }
+.home-content { position: relative; z-index: 2; display: flex; flex-direction: column; align-items: center; max-width: 700px; width: 100%; }
+.home-eyebrow { font-family: var(--font-m); font-size: 11px; letter-spacing: .18em; color: var(--si); margin-bottom: 16px; display: flex; align-items: center; gap: 8px; justify-content: center; }
+.home-eyebrow::before { content: ''; display: inline-block; width: 22px; height: 1px; background: var(--si); }
+.home-title { font-family: var(--font-t); font-size: clamp(26px, 4vw, 54px); font-weight: 900; line-height: 1.08; margin-bottom: 14px; background: linear-gradient(100deg, #20f7dc, #4a74ff, #b173e0, #f2b15e); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; color: transparent; text-shadow: 0 0 20px rgba(32,247,220,.7); }
+.home-accent { color: #20f7dc; text-shadow: 0 0 34px rgba(32,247,220,.65); }
+.home-desc { font-size: 14px; color: var(--text-dim); max-width: 480px; line-height: 1.7; margin-bottom: 20px; }
+.home-badges { display: flex; gap: 8px; flex-wrap: wrap; justify-content: center; margin-bottom: 32px; }
+.sys-badge { display: flex; align-items: center; gap: 7px; font-size: 12px; font-weight: 600; letter-spacing: .06em; padding: 7px 16px; border-radius: 999px; border: 1px solid; font-family: var(--font-m); }
+.sys-badge.si  { color:var(--si);  border-color:var(--si);  background:var(--si-dim); }
+.sys-badge.imp { color:var(--imp); border-color:var(--imp); background:var(--imp-dim); }
+.sys-badge.us  { color:var(--us);  border-color:var(--us);  background:var(--us-dim); }
+.sys-dot { width:7px; height:7px; border-radius:50%; animation:pulse 2s ease infinite; }
+.sys-badge.si  .sys-dot { background:var(--si); }
+.sys-badge.imp .sys-dot { background:var(--imp); }
+.sys-badge.us  .sys-dot { background:var(--us); }
+
+.home-quick-grid { display: flex; flex-wrap: wrap; gap: 16px; justify-content: center; max-width: 696px; }
+.home-quick-grid .hq-card { width: 160px; flex-shrink: 0; }
+.hq-card-act { position: relative; border-color: rgba(57,255,20,.25) !important; background: rgba(57,255,20,.04) !important; }
+.hq-card-act:hover { border-color: #39ff14 !important; box-shadow: 0 0 28px rgba(57,255,20,.35) !important; }
+.hq-card { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 8px; padding: 18px 12px 16px; background: rgba(17, 28, 52, 0.60); border: 1px solid rgba(33, 100, 246, 0.24); border-radius: 24px; cursor: pointer; transition: all var(--tr); backdrop-filter: blur(18px); min-height: 140px; }
+.hq-card:hover { border-color: var(--c); background: color-mix(in srgb, var(--c) 22%, rgba(12,21,46,0.62)); transform: translateY(-4px) scale(1.05); box-shadow: 0 0 26px color-mix(in srgb, var(--c) 55%, transparent); }
+.hq-card-act { border-color: #20f7dc !important; background: rgba(32,247,220,.16) !important; }
+.hq-card-act:hover { border-color: #20f7dc !important; box-shadow: 0 0 26px rgba(32,247,220,.55) !important; }
+.hq-icon { font-size: 40px; line-height: 1; color: var(--c); text-shadow: 0 0 16px rgba(255,255,255,.4); }
+.hq-name { font-family: var(--font-t); font-size: 15px; font-weight: 800; color: var(--c); letter-spacing: .06em; text-align: center; }
+.hq-desc { font-size: 12px; color: #c9d1e3; text-align: center; line-height: 1.5; }
+
+
+.home-orb-wrap { position: absolute; right: -80px; top: 50%; transform: translateY(-50%); width: 460px; height: 460px; pointer-events: none; z-index: 1; }
+.hero-orb { position: absolute; top:50%; left:50%; transform: translate(-50%,-50%); width:160px; height:160px; border-radius:50%; background: radial-gradient(circle at 40% 40%, var(--si), var(--imp) 60%, transparent 80%); opacity: .22; filter: blur(20px); animation: orbPulse 4s ease infinite alternate; }
+.hero-ring { position: absolute; top:50%; left:50%; transform: translate(-50%,-50%); border-radius:50%; border:1px solid; animation: spin linear infinite; }
+.hero-ring.r1{width:240px;height:240px;border-color:rgba(0,229,176,.22);animation-duration:20s}
+.hero-ring.r2{width:320px;height:320px;border-color:rgba(0,180,255,.16);animation-duration:32s;animation-direction:reverse}
+.hero-ring.r3{width:410px;height:410px;border-color:rgba(255,184,0,.10);animation-duration:50s}
+
+/* ══════════════════════════════════════════════════════
+   SECCIONES COMUNES
+══════════════════════════════════════════════════════ */
+.section-label { font-family:var(--font-m);font-size:11px;color:var(--si);letter-spacing:.15em;margin-bottom:8px; }
+.section-title { font-family:var(--font-t);font-size:clamp(20px,3vw,32px);font-weight:700;color:var(--white);margin-bottom:10px;line-height:1.2; }
+.section-desc { font-size:14px;color:var(--text-dim);max-width:600px;line-height:1.7; }
+.sys-cards-grid { display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:18px;margin-bottom:24px; }
+.sys-card { position: relative; background: rgba(26, 41, 68, .75); border: 1px solid rgba(29, 72, 163, .35); border-radius: 26px; padding: 20px 18px 16px; cursor: pointer; overflow: hidden; transition: all var(--tr); display: flex; flex-direction: column; gap: 10px; }
+.sys-card:hover { transform: translateY(-5px); border-color: rgba(32,247,220,.8); box-shadow: 0 0 24px rgba(32,247,220,.4); }
+.sys-card.si:hover,.sys-card.si.active { border-color: var(--si); box-shadow: 0 0 24px var(--si-glow); }
+.sys-card.imp:hover,.sys-card.imp.active { border-color: var(--imp); box-shadow: 0 0 24px var(--imp-glow); }
+.sys-card.us:hover,.sys-card.us.active { border-color: var(--us); box-shadow: 0 0 24px var(--us-glow); }
+.card-glow { position: absolute; top: -40px; left: 50%; transform: translateX(-50%); width: 120px; height: 120px; border-radius: 50%; filter: blur(42px); opacity: 0; transition: opacity var(--tr); pointer-events: none; }
+.sys-card.si .card-glow { background: rgba(32,247,220,.74); }
+.sys-card.imp .card-glow { background: rgba(74,116,255,.72); }
+.sys-card.us .card-glow { background: rgba(242,177,94,.72); }
+.sys-card:hover .card-glow { opacity: .33; }
+
+.card-icon{font-size:32px} .card-tag{display:inline-block;font-family:var(--font-m);font-size:10px;font-weight:700;letter-spacing:.14em;padding:3px 9px;border-radius:4px;border:1px solid;width:fit-content}
+.card-tag.si{color:var(--si);border-color:var(--si);background:var(--si-dim)} .card-tag.imp{color:var(--imp);border-color:var(--imp);background:var(--imp-dim)} .card-tag.us{color:var(--us);border-color:var(--us);background:var(--us-dim)}
+.card-name{font-family:var(--font-t);font-size:14px;font-weight:700;color:var(--white);letter-spacing:.02em}
+.card-short{font-size:13px;color:var(--text-dim);line-height:1.6;flex:1}
+.card-btn{display:inline-flex;align-items:center;gap:5px;font-family:var(--font-m);font-size:11px;font-weight:700;letter-spacing:.1em;padding:6px 14px;border-radius:7px;border:1px solid;transition:all var(--tr)}
+.card-btn.si{color:var(--si);border-color:var(--si);background:var(--si-dim)} .card-btn.imp{color:var(--imp);border-color:var(--imp);background:var(--imp-dim)} .card-btn.us{color:var(--us);border-color:var(--us);background:var(--us-dim)}
+.sys-card:hover .card-btn{filter:brightness(1.3)}
+.sys-detail-panel{display:none;background:var(--panel);border:1px solid var(--border2);border-radius:var(--rlg);padding:28px;position:relative;margin-top:4px;animation:fadeUp .3s ease}
+.sys-detail-panel.open{display:block}
+.detail-close{position:absolute;top:14px;right:14px;font-family:var(--font-m);font-size:11px;color:var(--text-dim);background:transparent;border:1px solid var(--border);padding:5px 12px;border-radius:6px;cursor:pointer;transition:all var(--tr)}
+.detail-close:hover{color:var(--si);border-color:var(--si)}
+.detail-content{display:grid;grid-template-columns:1fr 1fr;gap:24px}
+.detail-content h3{font-family:var(--font-t);font-size:16px;color:var(--white);grid-column:1/-1;margin-bottom:4px}
+.detail-block h4{font-family:var(--font-m);font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:var(--text-dim);margin-bottom:8px}
+.detail-block p{font-size:13.5px;color:var(--text);line-height:1.7}
+.unit-tags{display:flex;flex-wrap:wrap;gap:5px;margin-top:7px}
+.unit-tag{font-family:var(--font-m);font-size:10.5px;padding:3px 8px;border-radius:5px;border:1px solid}
+.detail-si  .unit-tag{color:var(--si);border-color:rgba(0,229,176,.4);background:var(--si-dim)}
+.detail-imp .unit-tag{color:var(--imp);border-color:rgba(0,180,255,.4);background:var(--imp-dim)}
+.detail-us  .unit-tag{color:var(--us);border-color:rgba(255,184,0,.4);background:var(--us-dim)}
+.world-use-box{border-left:3px solid;padding:11px 14px;border-radius:0 8px 8px 0;font-size:13px;line-height:1.7;color:var(--text);margin-top:7px}
+.detail-si  .world-use-box{border-color:var(--si);background:var(--si-dim)}
+.detail-imp .world-use-box{border-color:var(--imp);background:var(--imp-dim)}
+.detail-us  .world-use-box{border-color:var(--us);background:var(--us-dim)}
+.uso-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:14px}
+.uso-card{background:var(--panel);border:1px solid var(--border);border-radius:var(--rlg);padding:16px 18px;transition:all var(--tr)}
+.uso-card:hover{border-color:var(--border2);transform:translateY(-2px)}
+.uso-header{display:flex;align-items:center;gap:9px;margin-bottom:10px}
+.uso-flag{font-size:20px} .uso-region{font-family:var(--font-t);font-size:11px;font-weight:700;color:var(--white);flex:1;letter-spacing:.03em}
+.uso-sys-pill{font-family:var(--font-m);font-size:9px;font-weight:700;padding:2px 7px;border-radius:4px;border:1px solid}
+.uso-sys-pill.si{color:var(--si);border-color:var(--si);background:var(--si-dim)} .uso-sys-pill.imp{color:var(--imp);border-color:var(--imp);background:var(--imp-dim)} .uso-sys-pill.us{color:var(--us);border-color:var(--us);background:var(--us-dim)}
+.uso-list{list-style:none;display:flex;flex-direction:column;gap:4px}
+.uso-list li{font-size:12px;color:var(--text-dim);padding-left:13px;position:relative;line-height:1.4}
+.uso-list li::before{content:'›';position:absolute;left:0}
+.method-tabs{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:24px}
+.mtab{font-family:var(--font-m);font-size:12px;letter-spacing:.07em;font-weight:700;padding:8px 18px;border-radius:8px;border:1px solid var(--border);color:var(--text-dim);background:transparent;cursor:pointer;transition:all var(--tr)}
+.mtab:hover{color:var(--si);border-color:var(--si)} .mtab.active{color:var(--bg);background:var(--si);border-color:var(--si);box-shadow:0 0 14px var(--si-glow)}
+.method-panel{display:none} .method-panel.active{display:block;animation:fadeUp .3s ease}
+.method-steps{display:flex;flex-direction:column;gap:12px;margin-bottom:24px}
+.mstep{display:flex;gap:16px;align-items:flex-start;background:var(--panel);border:1px solid var(--border);border-radius:var(--r);padding:16px 18px;transition:border-color var(--tr)}
+.mstep:hover{border-color:var(--border2)}
+.mstep-num{width:34px;height:34px;border-radius:50%;background:var(--si-dim);border:1px solid var(--si);display:flex;align-items:center;justify-content:center;font-family:var(--font-t);font-size:13px;font-weight:700;color:var(--si);flex-shrink:0}
+.mstep-body h4{font-size:14px;font-weight:600;color:var(--white);margin-bottom:4px} .mstep-body p{font-size:13px;color:var(--text-dim);line-height:1.6}
+.formula-terminal{background:#020810;border:1px solid rgba(0,229,176,.3);border-radius:var(--r);padding:18px 22px;font-family:var(--font-m);font-size:13.5px;line-height:2}
+.fline{display:flex;align-items:center;gap:14px} .flabel{font-size:10px;letter-spacing:.1em;color:#3a5a7a;min-width:95px}
+.fval{color:#00e5b0} .fval.blue{color:#79b8ff} .fval.amber{color:#ffd57e} .fval.dim{color:#6a8aaa}
+.conv-box{max-width:680px;background:var(--panel);border:1px solid var(--border2);border-radius:var(--rlg);padding:26px;box-shadow:0 0 36px rgba(0,229,176,.05)}
+.conv-cat-strip{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:20px}
+.cctab{font-family:var(--font-m);font-size:11px;letter-spacing:.07em;font-weight:700;padding:5px 11px;border-radius:6px;border:1px solid var(--border);color:var(--text-dim);background:transparent;cursor:pointer;transition:all var(--tr)}
+.cctab:hover{color:var(--si);border-color:var(--si)} .cctab.active{color:var(--bg);background:var(--si);border-color:var(--si)}
+.conv-inputs{display:grid;grid-template-columns:1fr 1fr auto 1fr;gap:12px;align-items:end;margin-bottom:18px}
+.conv-field label{display:block;font-family:var(--font-m);font-size:10px;letter-spacing:.12em;color:var(--text-dim);margin-bottom:5px}
+.conv-field input,.conv-field select{width:100%;padding:10px 13px;background:var(--bg2);border:1px solid var(--border);border-radius:var(--r);font-size:14px;color:var(--white);outline:none;transition:border-color var(--tr);appearance:none;font-family:var(--font-b)}
+.conv-field input:focus,.conv-field select:focus{border-color:var(--si);box-shadow:0 0 8px var(--si-glow)}
+.conv-arrow-wrap{display:flex;align-items:flex-end;justify-content:center;padding-bottom:9px}
+.conv-arrow-icon{font-size:20px;color:var(--si);text-shadow:0 0 10px var(--si-glow)}
+.conv-result-panel{background:rgba(0,229,176,.06);border:1px solid var(--si);border-radius:var(--r);padding:18px 22px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px;box-shadow:0 0 18px var(--si-glow)}
+.conv-result-label{font-family:var(--font-m);font-size:10px;letter-spacing:.15em;color:var(--si);margin-bottom:3px}
+.conv-result-value{font-family:var(--font-t);font-size:26px;font-weight:700;color:var(--si);text-shadow:0 0 18px var(--si-glow)}
+.conv-result-formula{font-family:var(--font-m);font-size:12.5px;color:var(--text-dim)}
+.level-tabs{display:flex;gap:9px;margin-bottom:28px;flex-wrap:wrap}
+.lvl-tab{display:flex;align-items:center;gap:7px;font-family:var(--font-m);font-size:11px;font-weight:700;letter-spacing:.12em;padding:9px 20px;border-radius:999px;border:1px solid;transition:all var(--tr);background:transparent;cursor:pointer}
+.lvl-tab .lvl-dot{width:7px;height:7px;border-radius:50%}
+.lvl-tab.basico{color:var(--si);border-color:var(--si)} .lvl-tab.medio{color:var(--us);border-color:var(--us)} .lvl-tab.avanzado{color:var(--cross);border-color:var(--cross)}
+.lvl-tab.basico .lvl-dot{background:var(--si)} .lvl-tab.medio .lvl-dot{background:var(--us)} .lvl-tab.avanzado .lvl-dot{background:var(--cross)}
+.lvl-tab.active.basico{background:var(--si);color:var(--bg);box-shadow:0 0 14px var(--si-glow)} .lvl-tab.active.medio{background:var(--us);color:var(--bg);box-shadow:0 0 14px var(--us-glow)} .lvl-tab.active.avanzado{background:var(--cross);color:var(--bg);box-shadow:0 0 14px rgba(201,107,255,.5)}
+.ex-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(290px,1fr));gap:16px}
+.ex-card{background:var(--panel);border:1px solid var(--border);border-radius:var(--rlg);overflow:hidden;transition:all var(--tr)}
+.ex-card:hover{transform:translateY(-3px)}
+.ex-card.basico:hover{border-color:var(--si);box-shadow:0 0 18px var(--si-glow)} .ex-card.medio:hover{border-color:var(--us);box-shadow:0 0 18px var(--us-glow)} .ex-card.avanzado:hover{border-color:var(--cross);box-shadow:0 0 18px rgba(201,107,255,.4)}
+.ex-card-top-bar{height:3px;width:100%}
+.ex-card.basico .ex-card-top-bar{background:var(--si)} .ex-card.medio .ex-card-top-bar{background:var(--us)} .ex-card.avanzado .ex-card-top-bar{background:var(--cross)}
+.ex-head{padding:16px 18px 11px} .ex-head-row{display:flex;align-items:center;justify-content:space-between;margin-bottom:7px}
+.ex-cat-tag{font-family:var(--font-m);font-size:9px;letter-spacing:.12em;color:var(--text-dim)}
+.ex-lvl-tag{font-family:var(--font-m);font-size:9px;font-weight:700;padding:2px 7px;border-radius:4px;border:1px solid}
+.ex-card.basico .ex-lvl-tag{color:var(--si);border-color:var(--si);background:var(--si-dim)} .ex-card.medio .ex-lvl-tag{color:var(--us);border-color:var(--us);background:var(--us-dim)} .ex-card.avanzado .ex-lvl-tag{color:var(--cross);border-color:var(--cross);background:var(--cross-dim)}
+.ex-title{font-family:var(--font-t);font-size:13px;font-weight:700;color:var(--white);margin-bottom:5px;letter-spacing:.02em}
+.ex-context{font-size:12px;color:var(--text-dim);line-height:1.5}
+.ex-body{padding:0 18px 16px}
+.ex-steps{display:flex;flex-direction:column;gap:6px;margin-bottom:12px}
+.ex-step{display:flex;gap:9px;align-items:flex-start;background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.06);border-radius:7px;padding:7px 11px}
+.ex-step-n{width:19px;height:19px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;flex-shrink:0;color:var(--bg)}
+.ex-card.basico .ex-step-n{background:var(--si)} .ex-card.medio .ex-step-n{background:var(--us)} .ex-card.avanzado .ex-step-n{background:var(--cross)}
+.ex-step-txt{font-size:12px;color:var(--text);line-height:1.5} .ex-step-txt b{color:var(--white)}
+.ex-step-txt code{font-family:var(--font-m);font-size:11px;color:var(--text-dim);background:rgba(255,255,255,.05);padding:1px 4px;border-radius:3px}
+.ex-result-row{border-radius:7px;padding:9px 13px;display:flex;align-items:center;justify-content:space-between;gap:6px;flex-wrap:wrap}
+.ex-card.basico .ex-result-row{background:var(--si-dim);border:1px solid rgba(0,229,176,.25)} .ex-card.medio .ex-result-row{background:var(--us-dim);border:1px solid rgba(255,184,0,.25)} .ex-card.avanzado .ex-result-row{background:var(--cross-dim);border:1px solid rgba(201,107,255,.25)}
+.ex-result-lbl{font-family:var(--font-m);font-size:9px;letter-spacing:.1em;font-weight:700}
+.ex-card.basico .ex-result-lbl{color:var(--si)} .ex-card.medio .ex-result-lbl{color:var(--us)} .ex-card.avanzado .ex-result-lbl{color:var(--cross)}
+.ex-result-val{font-family:var(--font-m);font-size:13px;font-weight:700}
+.ex-card.basico .ex-result-val{color:var(--si)} .ex-card.medio .ex-result-val{color:var(--us)} .ex-card.avanzado .ex-result-val{color:var(--cross)}
+.ex-tip{font-size:11.5px;color:var(--text-dim);margin-top:9px;line-height:1.55;padding:7px 11px;background:rgba(255,255,255,.025);border-radius:6px;border-left:2px solid var(--border2)}
+.ex-tip b{color:var(--text)}
+.tbl-controls{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-bottom:12px}
+.tbl-search{flex:1;min-width:200px;padding:9px 14px;background:var(--panel);border:1px solid var(--border);border-radius:var(--r);font-size:13px;color:var(--white);outline:none;transition:border-color var(--tr)}
+.tbl-search:focus{border-color:var(--si);box-shadow:0 0 8px var(--si-glow)}
+.tbl-sys-btns{display:flex;gap:5px;flex-wrap:wrap}
+.tsb{font-family:var(--font-m);font-size:10px;font-weight:700;letter-spacing:.08em;padding:6px 12px;border-radius:7px;border:1px solid;transition:all var(--tr);background:transparent;cursor:pointer}
+.tsb.all{color:var(--text-dim);border-color:var(--border)} .tsb.si{color:var(--si);border-color:var(--si)} .tsb.imp{color:var(--imp);border-color:var(--imp)} .tsb.us{color:var(--us);border-color:var(--us)} .tsb.cross{color:var(--cross);border-color:var(--cross)}
+.tsb.all.active{background:#3a4a5a;color:var(--white)} .tsb.si.active{background:var(--si);color:var(--bg);box-shadow:0 0 10px var(--si-glow)} .tsb.imp.active{background:var(--imp);color:var(--bg);box-shadow:0 0 10px var(--imp-glow)} .tsb.us.active{background:var(--us);color:var(--bg);box-shadow:0 0 10px var(--us-glow)} .tsb.cross.active{background:var(--cross);color:var(--bg)}
+.tbl-cat-strip{display:flex;gap:5px;flex-wrap:wrap;margin-bottom:10px}
+.tcatbtn{font-family:var(--font-m);font-size:10px;font-weight:600;letter-spacing:.06em;padding:4px 10px;border-radius:5px;border:1px solid var(--border);color:var(--text-dim);background:transparent;cursor:pointer;transition:all var(--tr)}
+.tcatbtn:hover{color:var(--si);border-color:var(--si)} .tcatbtn.active{color:var(--bg);background:var(--si);border-color:var(--si)}
+.tbl-count{font-family:var(--font-m);font-size:11px;color:var(--text-dim);margin-bottom:8px}
+.tbl-wrap{overflow-x:auto;border-radius:var(--r);border:1px solid var(--border)}
+#main-table{width:100%;border-collapse:collapse;font-size:12.5px}
+#main-table thead tr{background:var(--panel)}
+#main-table th{padding:10px 13px;text-align:left;font-family:var(--font-m);font-size:9.5px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--text-dim);border-bottom:1px solid var(--border);white-space:nowrap}
+#main-table td{padding:8px 13px;border-bottom:1px solid rgba(0,200,255,.06);color:var(--text);vertical-align:middle}
+#main-table tr:last-child td{border-bottom:none} #main-table tr:nth-child(even) td{background:rgba(255,255,255,.015)} #main-table tr:hover td{background:rgba(0,229,176,.04)}
+.td-mono{font-family:var(--font-m);font-size:11.5px;color:var(--text-dim)}
+.sys-pill{display:inline-block;font-family:var(--font-m);font-size:9px;font-weight:700;padding:2px 7px;border-radius:4px;border:1px solid;white-space:nowrap}
+.sys-pill.SI{color:var(--si);border-color:var(--si);background:var(--si-dim)} .sys-pill.IMP{color:var(--imp);border-color:var(--imp);background:var(--imp-dim)} .sys-pill.US{color:var(--us);border-color:var(--us);background:var(--us-dim)}
+.sys-pill.SI-IMP{color:#a0e0ff;border-color:#5090b0;background:rgba(80,144,176,.15)} .sys-pill.SI-US{color:#ffccaa;border-color:#a06040;background:rgba(160,96,64,.15)} .sys-pill.IMP-US{color:var(--cross);border-color:var(--cross);background:var(--cross-dim)}
+
+#mobile-nav { display: none; }
+
+@keyframes fadeUp{from{opacity:0;transform:translateY(18px)}to{opacity:1;transform:none}}
+@keyframes spin{from{transform:translate(-50%,-50%) rotate(0)}to{transform:translate(-50%,-50%) rotate(360deg)}}
+@keyframes orbPulse{from{opacity:.18;transform:translate(-50%,-50%) scale(.9)}to{opacity:.3;transform:translate(-50%,-50%) scale(1.1)}}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.6}}
+
+#offline-banner { display:none;position:fixed;top:0;left:0;right:0;z-index:9999;background:rgba(255,184,0,.15);border-bottom:1px solid rgba(255,184,0,.4);color:var(--us);font-family:var(--font-m);font-size:12px;letter-spacing:.06em;padding:10px 16px;text-align:center;align-items:center;justify-content:center;gap:10px; }
+#offline-banner.visible{display:flex;}
+#offline-banner button{background:transparent;border:1px solid currentColor;color:inherit;border-radius:5px;padding:2px 8px;cursor:pointer;font-size:12px;line-height:1.4;}
+
+.ex-card-hint{text-align:center;font-family:var(--font-m);font-size:10px;letter-spacing:.1em;color:var(--text-dim);padding:8px 0 4px;border-top:1px solid rgba(255,255,255,.05);margin:0 18px;transition:color var(--tr);}
+.ex-card:hover .ex-card-hint{color:var(--si);} .ex-card.medio:hover .ex-card-hint{color:var(--us);} .ex-card.avanzado:hover .ex-card-hint{color:var(--cross);}
+
+#ex-modal-overlay{position:fixed;inset:0;background:rgba(3,6,14,.85);backdrop-filter:blur(10px);z-index:600;opacity:0;pointer-events:none;transition:opacity .3s ease;}
+#ex-modal-overlay.open{opacity:1;pointer-events:all;}
+#ex-modal{position:fixed;top:50%;left:50%;transform:translate(-50%,-50%) scale(.93);z-index:700;width:min(640px,94vw);max-height:88vh;background:#0a1120;border:1px solid rgba(0,200,255,.2);border-radius:20px;display:flex;flex-direction:column;overflow:hidden;opacity:0;pointer-events:none;transition:opacity .3s ease,transform .32s cubic-bezier(.34,1.56,.64,1);box-shadow:0 0 80px rgba(0,229,176,.07),0 32px 80px rgba(0,0,0,.7);}
+#ex-modal.open{opacity:1;transform:translate(-50%,-50%) scale(1);pointer-events:all;}
+.exm-top-bar{height:4px;width:100%;flex-shrink:0;} .exm-top-bar.basico{background:linear-gradient(90deg,var(--si),#00b4ff);} .exm-top-bar.medio{background:linear-gradient(90deg,var(--us),#ff6b6b);} .exm-top-bar.avanzado{background:linear-gradient(90deg,var(--cross),#00b4ff);}
+.exm-header{display:flex;align-items:flex-start;justify-content:space-between;gap:16px;padding:22px 24px 18px;border-bottom:1px solid rgba(0,200,255,.1);flex-shrink:0;}
+.exm-header-left{display:flex;flex-direction:column;gap:8px;flex:1;} .exm-meta-row{display:flex;align-items:center;gap:10px;}
+.exm-cat{font-family:var(--font-m);font-size:10px;letter-spacing:.16em;color:var(--text-dim);text-transform:uppercase;}
+.exm-lvl-tag{font-family:var(--font-m);font-size:10px;font-weight:700;padding:3px 9px;border-radius:5px;border:1px solid;letter-spacing:.1em;}
+.exm-lvl-tag.basico{color:var(--si);border-color:var(--si);background:var(--si-dim);} .exm-lvl-tag.medio{color:var(--us);border-color:var(--us);background:var(--us-dim);} .exm-lvl-tag.avanzado{color:var(--cross);border-color:var(--cross);background:var(--cross-dim);}
+.exm-title{font-family:var(--font-t);font-size:22px;font-weight:700;color:var(--white);line-height:1.2;letter-spacing:.02em;}
+.exm-context{font-size:13px;color:var(--text-dim);line-height:1.6;font-style:italic;}
+.exm-close{width:38px;height:38px;border-radius:10px;border:1px solid rgba(0,200,255,.2);background:transparent;color:var(--text-dim);font-size:18px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all var(--tr);flex-shrink:0;line-height:1;}
+.exm-close:hover{color:#fff;border-color:rgba(0,200,255,.5);background:rgba(0,200,255,.08);}
+.exm-body{flex:1;overflow-y:auto;padding:22px 24px 28px;display:flex;flex-direction:column;gap:18px;}
+.exm-body::-webkit-scrollbar{width:4px;} .exm-body::-webkit-scrollbar-thumb{background:rgba(0,200,255,.2);border-radius:4px;}
+.exm-section-label{font-family:var(--font-m);font-size:10px;letter-spacing:.16em;color:var(--si);}
+.exm-steps{display:flex;flex-direction:column;gap:10px;}
+.exm-step{display:flex;align-items:flex-start;gap:14px;padding:14px 18px;background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.07);border-radius:12px;transition:border-color var(--tr);}
+.exm-step.basico:hover{border-color:rgba(0,229,176,.25);} .exm-step.medio:hover{border-color:rgba(255,184,0,.25);} .exm-step.avanzado:hover{border-color:rgba(201,107,255,.25);}
+.exm-step-num{width:34px;height:34px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-family:var(--font-t);font-size:14px;font-weight:700;flex-shrink:0;color:#060b14;}
+.exm-step-num.basico{background:var(--si);box-shadow:0 0 12px var(--si-glow);} .exm-step-num.medio{background:var(--us);box-shadow:0 0 12px var(--us-glow);} .exm-step-num.avanzado{background:var(--cross);box-shadow:0 0 12px rgba(201,107,255,.4);}
+.exm-step-body{display:flex;flex-direction:column;gap:4px;flex:1;}
+.exm-step-label{font-size:12px;font-weight:600;color:var(--text);font-family:var(--font-b);}
+.exm-step-code{font-family:var(--font-m);font-size:15px;color:var(--white);letter-spacing:.02em;background:rgba(0,0,0,.3);padding:5px 10px;border-radius:6px;border:1px solid rgba(0,200,255,.1);display:inline-block;}
+.exm-result{display:flex;align-items:center;justify-content:space-between;padding:16px 20px;border-radius:12px;flex-wrap:wrap;gap:8px;}
+.exm-result.basico{background:var(--si-dim);border:1px solid rgba(0,229,176,.3);box-shadow:0 0 20px var(--si-glow);} .exm-result.medio{background:var(--us-dim);border:1px solid rgba(255,184,0,.3);box-shadow:0 0 20px var(--us-glow);} .exm-result.avanzado{background:var(--cross-dim);border:1px solid rgba(201,107,255,.3);box-shadow:0 0 20px rgba(201,107,255,.25);}
+.exm-result-lbl{font-family:var(--font-m);font-size:10px;letter-spacing:.16em;text-transform:uppercase;}
+.exm-result.basico .exm-result-lbl{color:var(--si);} .exm-result.medio .exm-result-lbl{color:var(--us);} .exm-result.avanzado .exm-result-lbl{color:var(--cross);}
+.exm-result-val{font-family:var(--font-t);font-size:22px;font-weight:700;}
+.exm-result.basico .exm-result-val{color:var(--si);text-shadow:0 0 18px var(--si-glow);} .exm-result.medio .exm-result-val{color:var(--us);text-shadow:0 0 18px var(--us-glow);} .exm-result.avanzado .exm-result-val{color:var(--cross);text-shadow:0 0 18px rgba(201,107,255,.5);}
+.exm-tip{font-size:13.5px;color:var(--text);line-height:1.7;padding:14px 18px;background:rgba(255,255,255,.025);border-radius:10px;border-left:3px solid var(--border2);} .exm-tip b{color:var(--si);}
+
+#dgz-firma{position:fixed;bottom:18px;right:24px;z-index:400;font-family:'Orbitron',monospace;font-size:13px;font-weight:900;letter-spacing:.22em;color:transparent;background:linear-gradient(135deg,#00e5b0,#00b4ff);-webkit-background-clip:text;background-clip:text;opacity:.55;pointer-events:none;user-select:none;transition:opacity .3s ease;}
+#dgz-firma:hover{opacity:1;pointer-events:all;}
+
+#panel-modal-overlay{display:none;position:fixed;inset:0;background:rgba(3,6,14,.82);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);z-index:300;opacity:0;pointer-events:none;transition:opacity .3s ease;}
+#panel-modal-overlay.open{display:block;opacity:1;pointer-events:all;}
+#panel-modal{display:none;position:fixed;bottom:0;left:0;right:0;z-index:310;max-height:92vh;background:#0a1120;border:1px solid rgba(0,200,255,.15);border-radius:24px 24px 0 0;overflow:hidden;flex-direction:column;opacity:0;pointer-events:none;transform:translateY(100%);transition:opacity .3s ease,transform .35s cubic-bezier(.32,1.2,.64,1);box-shadow:0 -8px 60px rgba(0,0,0,.7),0 0 40px rgba(0,229,176,.04);}
+#panel-modal.open{display:flex;opacity:1;transform:translateY(0);pointer-events:all;}
+#panel-modal::before{content:'';display:block;width:40px;height:4px;background:rgba(0,200,255,.2);border-radius:2px;margin:12px auto 0;flex-shrink:0;}
+.pm-header{display:flex;align-items:flex-start;justify-content:space-between;padding:10px 20px 14px;border-bottom:1px solid rgba(0,200,255,.08);flex-shrink:0;gap:12px;}
+.pm-header-left{display:flex;flex-direction:column;gap:3px;}
+.pm-eyebrow{font-family:var(--font-m);font-size:9px;letter-spacing:.18em;color:var(--si);text-transform:uppercase;}
+.pm-title{font-family:var(--font-t);font-size:17px;font-weight:700;color:var(--white);letter-spacing:.02em;}
+.pm-close{width:34px;height:34px;border-radius:10px;border:1px solid rgba(0,200,255,.18);background:transparent;color:var(--text-dim);font-size:16px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all var(--tr);flex-shrink:0;line-height:1;}
+.pm-close:hover{color:#fff;border-color:rgba(0,200,255,.45);background:rgba(0,200,255,.08);}
+.pm-body{flex:1;overflow-y:auto;overflow-x:hidden;-webkit-overflow-scrolling:touch;padding:20px 16px calc(20px + env(safe-area-inset-bottom));}
+.pm-body::-webkit-scrollbar{width:4px;} .pm-body::-webkit-scrollbar-thumb{background:rgba(0,200,255,.18);border-radius:4px;}
+.pm-body .panel{position:relative !important;inset:auto !important;opacity:1 !important;transform:none !important;padding:0 !important;overflow:visible !important;display:block !important;pointer-events:all !important;height:auto !important;min-height:unset !important;}
+.pm-body .panel-header{display:none;}
+
+#sec-modal-overlay{position:fixed;inset:0;background:rgba(3,6,14,.82);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);z-index:600;opacity:0;pointer-events:none;transition:opacity .3s ease;}
+#sec-modal-overlay.open{opacity:1;pointer-events:all;}
+#sec-modal{position:fixed;top:50%;left:50%;transform:translate(-50%,-50%) scale(.93);z-index:700;width:min(820px,96vw);max-height:88vh;background:#0a1120;border:1px solid rgba(0,200,255,.22);border-radius:20px;display:flex;flex-direction:column;opacity:0;pointer-events:none;transition:opacity .32s ease,transform .32s cubic-bezier(.34,1.56,.64,1);box-shadow:0 0 80px rgba(0,229,176,.08),0 32px 80px rgba(0,0,0,.7);}
+#sec-modal.open{opacity:1;transform:translate(-50%,-50%) scale(1);pointer-events:all;}
+.sec-modal-header{display:flex;align-items:center;justify-content:space-between;padding:20px 24px 16px;border-bottom:1px solid rgba(0,200,255,.12);flex-shrink:0;}
+.sec-modal-header-left{display:flex;flex-direction:column;gap:3px;}
+.sec-modal-body{flex:1;overflow-y:auto;overflow-x:hidden;-webkit-overflow-scrolling:touch;padding:20px 20px 32px;min-height:0;}
+.sec-modal-body::-webkit-scrollbar{width:4px;} .sec-modal-body::-webkit-scrollbar-track{background:transparent;} .sec-modal-body::-webkit-scrollbar-thumb{background:rgba(0,200,255,.2);border-radius:4px;}
+.sec-modal-body .sys-cards-grid{grid-template-columns:1fr;} .sec-modal-body .detail-content{grid-template-columns:1fr;} .sec-modal-body .conv-inputs{grid-template-columns:1fr;} .sec-modal-body .conv-arrow-wrap{display:none;} .sec-modal-body .conv-box{max-width:100%;} .sec-modal-body .ex-grid{grid-template-columns:1fr;} .sec-modal-body .tbl-wrap{overflow-x:auto;-webkit-overflow-scrolling:touch;} .sec-modal-body .method-tabs{flex-wrap:wrap;}
+
+
+
+@media (max-width: 768px) {
+
+  html { overflow-x: hidden; overflow-y: auto; background: var(--bg); -webkit-text-size-adjust: 100%; }
+  body { overflow-x: hidden; overflow-y: auto; background: var(--bg); width: 100%; max-width: 100vw; display: block; }
+
+  #sidebar    { display: none !important; }
+  #breadcrumb { display: none !important; }
+
+  #main-area {
+    margin-left: 0 !important; height: auto !important;
+    overflow-x: hidden; overflow-y: visible;
+    width: 100%; max-width: 100vw;
+    padding-bottom: calc(76px + env(safe-area-inset-bottom));
+  }
+
+  .panel {
+    position: relative !important; inset: auto !important;
+    opacity: 1 !important; transform: none !important;
+    pointer-events: all !important; display: none !important;
+    padding: 28px 14px calc(24px + env(safe-area-inset-bottom)) !important;
+    width: 100%; box-sizing: border-box; overflow-x: hidden;
+  }
+  .panel.active { display: flex !important; flex-direction: column; }
+
+  /* ─────────────────────────────────────────────────
+     PANEL HOME — igual al boceto
+  ───────────────────────────────────────────────── */
+  #panel-home {
+    padding: 28px 14px calc(24px + env(safe-area-inset-bottom)) !important;
+    align-items: center; justify-content: flex-start;
+    text-align: center; overflow-y: visible !important;
+  }
+  .home-bg-grid  { display: block !important; opacity: 0.25; }
+  .home-orb-wrap { display: none !important; }
+  .home-content  {
+    width: 100%; max-width: 100%;
+    align-items: center; text-align: center;
+    box-sizing: border-box; overflow-x: hidden;
+    position: relative; z-index: 2;
+    display: flex; flex-direction: column; gap: 0;
+  }
+
+  .home-eyebrow {
+    font-size: 8px !important; letter-spacing: .12em !important;
+    margin-bottom: 10px !important; justify-content: center;
+  }
+  .home-title {
+    font-size: clamp(26px, 7vw, 42px) !important;
+    text-align: center !important; margin-bottom: 12px !important;
+    line-height: 1.15 !important; word-break: break-word; width: 100%;
+  }
+  .home-desc {
+    font-size: 13px !important; text-align: center !important;
+    margin-bottom: 16px !important; line-height: 1.65;
+    max-width: 100%; word-break: break-word;
+  }
+
+  /* Badges — fila completa como en el boceto */
+.home-badges {
+  display: flex !important; flex-wrap: nowrap;
+  gap: 8px; margin-bottom: 26px !important;
+  width: 100%; justify-content: center;
+  overflow-x: auto; padding: 0 4px 4px;
+  scrollbar-width: none;
+}
+.home-badges::-webkit-scrollbar { display: none; }
+.sys-badge {
+  font-size: 10px !important; padding: 6px 12px !important;
+  white-space: nowrap; flex-shrink: 0; border-radius: 999px !important;
+}
+.sys-badge.imp { display: flex !important; }
+
+  /* ─────────────────────────────────────────────────
+     GRID 3 COLUMNAS — exactamente como el boceto
+     El boceto muestra 3 tarjetas por fila con
+     ícono grande + nombre + descripción visibles
+  ───────────────────────────────────────────────── */
+  .home-quick-grid {
+    display: grid !important;
+    grid-template-columns: repeat(3, 1fr) !important;
+    gap: 10px !important;
+    width: 100% !important; margin: 0 !important;
+    box-sizing: border-box !important;
+  }
+
+
+  .home-quick-grid .hq-card {
+    width: 100% !important; min-width: 0 !important;
+    aspect-ratio: unset !important;          /* sin cuadrado forzado */
+    padding: 16px 6px 14px !important;
+    border-radius: 16px !important;
+    display: flex !important; flex-direction: column !important;
+    align-items: center !important; justify-content: flex-start !important;
+    gap: 8px !important;
+    background: rgba(13, 24, 40, 0.92) !important;
+    border: 1px solid rgba(0, 200, 255, .14) !important;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, .45) !important;
+    transition: transform .15s ease, box-shadow .15s ease, border-color .15s ease !important;
+    -webkit-tap-highlight-color: transparent; touch-action: manipulation;
+    box-sizing: border-box; min-height: 110px;
+  }
+
+  .home-quick-grid .hq-card:active { transform: scale(.93) !important; }
+  .home-quick-grid .hq-card:hover  {
+    border-color: var(--c) !important;
+    box-shadow: 0 0 18px color-mix(in srgb, var(--c) 22%, transparent) !important;
+  }
+
+  .hq-card-act {
+    border-color: rgba(57, 255, 20, .28) !important;
+    background: rgba(10, 22, 10, .92) !important;
+  }
+
+  /* Ícono grande — protagonista de cada tarjeta */
+  .hq-icon {
+    font-size: 32px !important; line-height: 1;
+    filter: drop-shadow(0 0 8px var(--c));
+    margin-bottom: 2px;
+  }
+
+  /* Nombre visible y claro */
+  .hq-name {
+    font-family: var(--font-t) !important; font-size: 10px !important;
+    font-weight: 700 !important; color: var(--c) !important;
+    text-align: center !important; line-height: 1.2;
+    word-break: break-word; padding: 0 2px;
+  }
+
+  /* Descripción visible — como en el boceto */
+  .hq-desc {
+    font-size: 8px !important; color: var(--text-dim) !important;
+    text-align: center !important; line-height: 1.3;
+    word-break: break-word; padding: 0 2px;
+    display: block !important;              /* visible, no oculto */
+  }
+
+  /* ─────────────────────────────────────────────────
+     BOTTOM NAV — limpio y proporcional como el boceto
+     El boceto muestra: ícono grande + texto debajo,
+     botón activo con fondo y borde redondeado
+  ───────────────────────────────────────────────── */
+  #mobile-nav {
+    display: flex !important; position: fixed;
+    bottom: 0; left: 0; right: 0;
+    height: calc(72px + env(safe-area-inset-bottom));
+    padding: 6px 8px; padding-bottom: calc(6px + env(safe-area-inset-bottom));
+    background: rgba(6, 11, 20, .98);
+    border-top: 1px solid rgba(0, 229, 176, .18);
+    backdrop-filter: blur(24px); -webkit-backdrop-filter: blur(24px);
+    z-index: 200; overflow-x: auto; overflow-y: hidden;
+    scrollbar-width: none; align-items: center;
+    justify-content: space-around; gap: 2px;
+  }
+  #mobile-nav::-webkit-scrollbar { display: none; }
+
+  .mn-btn {
+    display: flex !important; flex-direction: column !important;
+    align-items: center !important; justify-content: center !important;
+    gap: 4px !important; background: none !important;
+    border: 1.5px solid transparent !important; cursor: pointer;
+    padding: 8px 10px !important; min-width: 58px !important;
+    border-radius: 14px !important; flex-shrink: 0;
+    color: rgba(140, 170, 210, .45) !important;
+    transition: color .18s ease, background .18s ease,
+                border-color .18s ease, transform .12s ease !important;
+    -webkit-tap-highlight-color: transparent; touch-action: manipulation;
+  }
+
+  /* Ícono — grande como en el boceto */
+  .mn-btn .mn-ico,
+  .mn-btn > *:first-child {
+    font-size: 24px !important; line-height: 1;
+    transition: transform .15s ease;
+  }
+
+  /* Texto — pequeño debajo del ícono */
+  .mn-btn .mn-txt,
+  .mn-btn span {
+    font-family: var(--font-b) !important; font-size: 9px !important;
+    letter-spacing: .02em; text-transform: capitalize;
+    white-space: nowrap; color: inherit !important; font-weight: 600;
+  }
+
+  /* Activo — fondo + borde como en el boceto */
+  .mn-btn.mn-active,
+  .mn-btn.active {
+    color: var(--si) !important;
+    background: rgba(0, 229, 176, .13) !important;
+    border-color: rgba(0, 229, 176, .35) !important;
+    box-shadow: 0 0 18px rgba(0, 229, 176, .18) !important;
+  }
+  .mn-btn.mn-active::before,
+  .mn-btn.active::before { display: none !important; }
+  .mn-btn:active { transform: scale(.88) !important; }
+  .mn-btn:active .mn-ico,
+  .mn-btn:active > *:first-child { transform: scale(.85) !important; }
+
+  /* ─────────────────────────────────────────────────
+     AJUSTES DEL RESTO DE SECCIONES
+  ───────────────────────────────────────────────── */
+  .conv-inputs { grid-template-columns: 1fr !important; }
+  .conv-arrow-wrap { display: none !important; }
+  .conv-box { max-width: 100% !important; padding: 18px 14px !important; }
+  .conv-field input, .conv-field select { min-height: 44px !important; font-size: 15px !important; }
+
+  .sys-cards-grid { grid-template-columns: 1fr !important; }
+  .detail-content { grid-template-columns: 1fr !important; }
+  .uso-grid       { grid-template-columns: 1fr !important; }
+  .ex-grid        { grid-template-columns: 1fr !important; }
+
+  .tbl-controls { flex-direction: column !important; align-items: stretch !important; gap: 8px !important; }
+  .tbl-search   { width: 100% !important; min-height: 44px !important; font-size: 14px !important; }
+  .tbl-sys-btns { flex-wrap: wrap !important; gap: 6px !important; }
+  .tbl-wrap     { -webkit-overflow-scrolling: touch; overflow-x: auto; }
+  #main-table   { font-size: 12px !important; }
+  #main-table th, #main-table td { padding: 7px 9px !important; white-space: nowrap; }
+  #main-table th:nth-child(7), #main-table td:nth-child(7) { display: none !important; }
+
+  .panel-header  { margin-bottom: 20px !important; }
+  .section-title { font-size: clamp(18px, 5.5vw, 26px) !important; }
+  .lvl-tab, .mtab { font-size: 10px !important; padding: 7px 12px !important; }
+  .level-tabs, .method-tabs { flex-wrap: wrap !important; gap: 7px !important; margin-bottom: 18px !important; }
+
+  .mstep     { padding: 12px 14px !important; gap: 10px !important; }
+  .mstep-num { width: 30px !important; height: 30px !important; font-size: 12px !important; }
+  .formula-terminal { font-size: 12px !important; padding: 12px !important; }
+
+  #ex-modal { width: 97vw !important; max-height: 94vh !important; border-radius: 14px !important; }
+  .exm-header { padding: 16px 16px 14px !important; }
+  .exm-body   { padding: 16px 16px 22px !important; }
+  .exm-title  { font-size: 18px !important; }
+  .exm-result-val { font-size: 18px !important; }
+
+  #act-modal { position: fixed !important; top: 50% !important; left: 50% !important; transform: translate(-50%,-50%) scale(.93) !important; width: min(820px,96vw) !important; max-height: 92vh !important; border-radius: 20px !important; }
+  #act-modal.open { transform: translate(-50%,-50%) scale(1) !important; }
+  #act-fab { bottom: calc(82px + env(safe-area-inset-bottom)) !important; right: 16px !important; width: 52px !important; height: 52px !important; }
+  .act-header { padding: 14px 16px 12px !important; }
+  .act-levels { padding: 10px 12px 0 !important; gap: 6px !important; }
+  .act-body   { padding: 12px 12px 20px !important; padding-bottom: calc(20px + env(safe-area-inset-bottom)) !important; }
+  .act-stats  { padding: 10px !important; gap: 6px !important; }
+  .act-stat-val { font-size: 16px !important; }
+  .act-stat-lbl { font-size: 8px !important; }
+  .act-lvl-btn  { font-size: 10px !important; padding: 7px 10px !important; }
+  .ex-q-text    { font-size: 13.5px !important; }
+  .ex-input-wrap { flex-direction: column !important; }
+  .ex-check-btn  { width: 100% !important; min-height: 44px !important; font-size: 12px !important; }
+  .act-opt-btn   { min-height: 44px !important; font-size: 12px !important; }
+
+  #sec-modal { width: min(820px,96vw) !important; max-height: 88vh !important; }
+  .sec-modal-body .sys-cards-grid { grid-template-columns: 1fr !important; }
+  .sec-modal-body .detail-content { grid-template-columns: 1fr !important; }
+  .sec-modal-body .conv-inputs    { grid-template-columns: 1fr !important; }
+  .sec-modal-body .conv-arrow-wrap{ display: none !important; }
+  .sec-modal-body .conv-box       { max-width: 100% !important; }
+  .sec-modal-body .ex-grid        { grid-template-columns: 1fr !important; }
+  .sec-modal-body .tbl-wrap       { overflow-x: auto !important; -webkit-overflow-scrolling: touch; }
+  .sec-modal-body .method-tabs    { flex-wrap: wrap !important; }
+  .sec-modal-body .uso-grid       { grid-template-columns: 1fr !important; }
+
+  #dgz-firma { bottom: calc(78px + env(safe-area-inset-bottom)) !important; right: 14px !important; font-size: 11px !important; }
+  #offline-banner { font-size: 11px !important; padding: 8px 12px !important; }
+}
+
+/* ══════════════════════════════════════════════════════
+   PANTALLAS MUY PEQUEÑAS ≤ 380px
+══════════════════════════════════════════════════════ */
+@media (max-width: 380px) {
+  .home-title { font-size: clamp(32px, 9vw, 50px) !important; }
+  .home-desc  { font-size: 12px !important; }
+
+  /* En pantallas muy pequeñas reducir a 3 columnas */
+  .home-quick-grid { grid-template-columns: repeat(3, 1fr) !important; gap: 8px !important; }
+  .hq-icon { font-size: 26px !important; }
+  .hq-name { font-size: 9px !important; }
+  .hq-desc { font-size: 7.5px !important; }
+
+  .mn-btn           { padding: 6px 6px !important; min-width: 46px !important; }
+  .mn-btn .mn-ico,
+  .mn-btn > *:first-child { font-size: 20px !important; }
+  .mn-btn .mn-txt,
+  .mn-btn span      { font-size: 7.5px !important; }
+
+  .section-title { font-size: clamp(16px, 5vw, 20px) !important; }
+  .act-lvl-btn   { font-size: 9px !important; padding: 6px 7px !important; }
+  #act-fab       { width: 46px !important; height: 46px !important; }
+}

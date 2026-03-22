@@ -1,0 +1,172 @@
+/* ═══════════════════════════════════════════════════════
+   UNITVERSE — mobile.css  (complemento mínimo)
+   Solo agrega el overlay y drawer de secciones extra.
+   Todo el responsive principal está en style.css.
+═══════════════════════════════════════════════════════ */
+
+/* Drawer + overlay para desktop y mobile */
+#mn-overlay {
+  display: none;
+  position: fixed; inset: 0;
+  background: rgba(3, 6, 14, .65);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  z-index: 195;
+}
+#mn-overlay.open { display: block; }
+
+#mn-drawer {
+  display: block;
+  position: fixed;
+  bottom: 82px;
+  top: auto;
+  left: 50%;
+  transform: translate(-50%, 120%);
+  width: min(94vw, 520px);
+  max-height: 62vh;
+  background: rgba(10, 18, 36, .88);
+  border: 1px solid rgba(32, 247, 220, .30);
+  border-radius: 20px;
+  padding: 14px;
+  z-index: 196;
+  box-shadow: 0 0 30px rgba(32, 247, 220, .35);
+  backdrop-filter: blur(14px);
+  transition: transform .35s cubic-bezier(.32, 1.2, .64, 1), opacity .28s ease;
+  overflow: hidden;
+  opacity: 0;
+  pointer-events: none;
+}
+#mn-drawer.open {
+  transform: translate(-50%, 0);
+  opacity: 1;
+  pointer-events: all;
+}
+
+.mn-drawer-handle {
+  width: 42px; height: 4px;
+  background: rgba(32, 247, 220, .32);
+  border-radius: 2px; margin: 0 auto 12px;
+}
+
+@media (min-width: 769px) {
+  /* En desktop: el drawer y su overlay se ocultan completamente.
+     Las secciones extra son accesibles desde el sidebar. */
+  #mn-drawer,
+  #mn-drawer.open,
+  #mn-overlay,
+  #mn-overlay.open {
+    display: none !important;
+    opacity: 0 !important;
+    pointer-events: none !important;
+    visibility: hidden !important;
+  }
+
+  /* Ocultar también el botón "Menu" del sidebar en desktop */
+  .sb-more-btn {
+    display: none !important;
+  }
+}
+
+@media (max-width: 768px) {
+
+  /* Asegura que el drawer base no interfiera en mobile */
+  #mn-drawer {
+    left: 0 !important;
+    transform: translateY(100%) !important;
+    width: 100% !important;
+    opacity: 1 !important;
+    pointer-events: none;
+    border-radius: 20px 20px 0 0 !important;
+  }
+  #mn-drawer.open {
+    transform: translateY(0) !important;
+    pointer-events: all;
+  }
+
+  /* Overlay del drawer */
+  #mn-overlay {
+    display: none;
+    position: fixed; inset: 0;
+    background: rgba(3, 6, 14, .75);
+    backdrop-filter: blur(6px);
+    -webkit-backdrop-filter: blur(6px);
+    z-index: 195;
+  }
+  #mn-overlay.open { display: block; }
+
+
+  .mn-drawer-handle {
+    width: 38px; height: 4px;
+    background: rgba(0, 200, 255, .22);
+    border-radius: 2px; margin: 0 auto 14px;
+  }
+  .mn-drawer-eyebrow {
+    font-family: var(--font-m); font-size: 9px;
+    letter-spacing: .16em; color: var(--si);
+    margin-bottom: 12px; text-align: center;
+  }
+  .mn-drawer-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 10px;
+  }
+  .mn-drawer-item {
+    display: flex; flex-direction: column;
+    align-items: center; gap: 6px; padding: 14px 8px;
+    background: rgba(255,255,255,.03);
+    border: 1px solid rgba(0,200,255,.1);
+    border-radius: 12px; cursor: pointer;
+    -webkit-tap-highlight-color: transparent;
+    touch-action: manipulation;
+    transition: border-color .18s ease, background .18s ease, transform .18s ease;
+  }
+  .mn-drawer-item:active { transform: scale(.93); }
+  .mn-drawer-item:hover  { border-color: rgba(32,247,220,.8); background: rgba(32,247,220,.14); }
+  .mn-drawer-ico { font-size: 26px; line-height: 1; }
+  .mn-drawer-txt {
+    font-family: var(--font-m); font-size: 9px;
+    letter-spacing: .06em; color: var(--text-dim);
+    text-align: center; text-transform: uppercase;
+  }
+
+  /* Bottom nav ciberpunk */
+  #mobile-nav {
+    position: fixed;
+    inset: auto 12px 12px;
+    left: 50%; transform: translateX(-50%);
+    z-index: 300;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    min-width: min(96vw, 520px);
+    max-width: 560px;
+    padding: 10px 10px 12px;
+    background: rgba(10, 20, 42, .78);
+    border: 1px solid rgba(32, 247, 220, .35);
+    border-radius: 24px;
+    backdrop-filter: blur(18px);
+    box-shadow: 0 0 20px rgba(32,247,220,.45);
+  }
+  .mn-btn {
+    border: none;
+    background: transparent;
+    color: #c9d1e3;
+    font: 500 11px var(--font-m);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 4px;
+    padding: 8px 10px;
+    border-radius: 18px;
+    width: 68px;
+    cursor: pointer;
+    transition: transform .2s ease, color .2s ease, background .2s ease;
+    -webkit-tap-highlight-color: transparent;
+  }
+  .mn-btn:hover { transform: translateY(-2px); background: rgba(20, 130, 255, .16); color: #fff; }
+  .mn-btn.active, .mn-btn.mn-active { color: #20f7dc; box-shadow: 0 0 16px rgba(32,247,220,.8), 0 0 24px rgba(74,116,255,.5); background: rgba(22, 120, 184, .20); border: 1px solid rgba(32,247,220,.85); }
+  .mn-ico { font-size: 21px; display: block; }
+  .mn-txt { font-size: 10px; }
+}
